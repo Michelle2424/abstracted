@@ -1,8 +1,6 @@
 import base64
-import html
 import json
 import os
-import re
 import urllib.parse
 from typing import Dict, List, Optional
 
@@ -35,12 +33,12 @@ Entrez.email = "abstracted.feed@service.internal"
 Entrez.tool = "AbstractedApp"
 
 # -----------------------------------------------------------------------------
-# Styling
+# Global CSS & High-Contrast Typography Styles
 # -----------------------------------------------------------------------------
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap');
 
     html, body, [class*="css"] {
         font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
@@ -51,14 +49,16 @@ st.markdown(
         background-color: #F8FAFC;
     }
 
+    /* Vibrant Logo Brand Gradient matching Favicon Colors */
     .app-brand {
-        font-size: 1.6rem;
+        font-size: 1.85rem;
         font-weight: 800;
         letter-spacing: -0.04em;
-        background: linear-gradient(135deg, #4338CA 0%, #0284C7 100%);
+        background: linear-gradient(135deg, #38BDF8 0%, #818CF8 50%, #C084FC 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: 0px;
+        margin-bottom: 0.1rem;
+        display: inline-block;
     }
 
     /* News card container */
@@ -66,15 +66,15 @@ st.markdown(
         background: #FFFFFF;
         border: 1px solid #E2E8F0;
         border-radius: 12px;
-        padding: 1.25rem;
-        margin-bottom: 1rem;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        padding: 1.35rem;
+        margin-bottom: 0.8rem;
         box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
     .news-card:hover {
         border-color: #CBD5E1;
-        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
     }
 
     .news-headline {
@@ -83,18 +83,26 @@ st.markdown(
         font-weight: 500;
         color: #0F172A;
         line-height: 1.35;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.6rem;
     }
 
-    .why-it-matters {
+    .teaser-line {
+        color: #334155;
+        font-size: 0.93rem;
+        line-height: 1.55;
+        margin-bottom: 0.4rem;
+    }
+
+    .why-it-matters-container {
         background: #F0FDF4;
         border-left: 3px solid #22C55E;
-        padding: 0.6rem 0.8rem;
-        border-radius: 0 6px 6px 0;
-        color: #166534;
-        font-size: 0.9rem;
-        line-height: 1.5;
-        margin: 0.6rem 0;
+        padding: 0.75rem 0.9rem;
+        border-radius: 0 8px 8px 0;
+        color: #14532D;
+        font-size: 0.91rem;
+        line-height: 1.6;
+        margin-top: 0.4rem;
+        margin-bottom: 0.6rem;
     }
 
     .badge {
@@ -111,21 +119,79 @@ st.markdown(
     .badge-intermediate { background: #FEF3C7; color: #B45309; }
     .badge-advanced { background: #FEE2E2; color: #B91C1C; }
 
+    /* Bottom-left user profile card */
+    .user-profile-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.6rem 0.75rem;
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        margin-bottom: 0.5rem;
+    }
+
+    .user-avatar-circle {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #38BDF8, #818CF8);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
+
+    /* Contrast Fixes for Streamlit Tabs & Expanders */
+    [data-testid="stTabs"] button [data-testid="stMarkdownContainer"] p {
+        color: #1E293B !important;
+        font-weight: 600;
+    }
+
+    [data-testid="stTabs"] [aria-selected="true"] [data-testid="stMarkdownContainer"] p {
+        color: #4F46E5 !important;
+    }
+
+    [data-testid="stExpander"] details {
+        background-color: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 8px !important;
+        color: #0F172A !important;
+    }
+
+    [data-testid="stExpander"] summary span {
+        color: #0F172A !important;
+        font-weight: 600;
+    }
+
+    .abstract-text-container {
+        color: #0F172A !important;
+        background: #F8FAFC;
+        padding: 1rem;
+        border-radius: 6px;
+        line-height: 1.65;
+        font-size: 0.92rem;
+    }
+
     .lesson-section {
         background: #FFFFFF;
         border: 1px solid #E2E8F0;
         border-radius: 12px;
-        padding: 1.25rem;
+        padding: 1.3rem;
         margin-bottom: 1rem;
     }
 
     .takeaway-bullet {
-        padding: 0.6rem 0.75rem;
-        background: #F1F5F9;
+        padding: 0.65rem 0.85rem;
+        background: #F8FAFC;
         border-left: 3px solid #6366F1;
         border-radius: 0 6px 6px 0;
         margin-bottom: 0.5rem;
         font-size: 0.95rem;
+        line-height: 1.5;
+        color: #1E293B;
     }
     </style>
     """,
@@ -133,20 +199,62 @@ st.markdown(
 )
 
 # -----------------------------------------------------------------------------
-# Clients & Initialization
+# Topic Taxonomy Loading
 # -----------------------------------------------------------------------------
-AVAILABLE_INTERESTS = [
-    "CRISPR & Gene Editing",
-    "AI in Healthcare",
-    "Neuroscience",
-    "Immunology & Vaccines",
-    "Synthetic Biology",
-    "Longevity & Aging",
-    "Cancer Oncology",
-    "Stem Cells",
-]
+DEFAULT_TOPICS_TAXONOMY = {
+    "Genomics & Engineering": [
+        "CRISPR",
+        "Gene Therapy",
+        "Synthetic Biology",
+        "Base Editing",
+    ],
+    "Neuroscience & Psychology": [
+        "Neuroplasticity",
+        "Alzheimer's Disease",
+        "Neural Interfaces",
+        "Brain-Computer Interface",
+    ],
+    "Medicine & Therapeutics": [
+        "mRNA Vaccines",
+        "Immunotherapy",
+        "CAR-T Cell Therapy",
+        "Antibiotic Resistance",
+    ],
+    "AI & Computational Biology": [
+        "AI in Medicine",
+        "AlphaFold",
+        "Protein Design",
+        "Machine Learning Diagnostics",
+    ],
+    "Cellular Biology & Aging": [
+        "Cellular Senescence",
+        "Stem Cells",
+        "Mitochondrial Biology",
+        "Telomeres",
+    ],
+}
 
 
+@st.cache_data(ttl=300)
+def load_research_topics() -> Dict[str, List[str]]:
+    """Loads categorized topics from topics.json with a structured fallback."""
+    if os.path.exists("topics.json"):
+        try:
+            with open("topics.json", "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, dict) and data:
+                    return data
+        except Exception:
+            pass
+    return DEFAULT_TOPICS_TAXONOMY
+
+
+TOPICS_TAXONOMY = load_research_topics()
+ALL_TOPICS_FLAT = [topic for category in TOPICS_TAXONOMY.values() for topic in category]
+
+# -----------------------------------------------------------------------------
+# Clients Initialization
+# -----------------------------------------------------------------------------
 def get_gemini_client() -> Optional[genai.Client]:
     api_key = st.secrets.get("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
     if not api_key:
@@ -165,13 +273,15 @@ def get_supabase_client() -> Optional[Client]:
         return None
 
 
-# Initialize Session State
+# Session State Defaults
 if "user" not in st.session_state:
     st.session_state.user = None
+if "user_first_name" not in st.session_state:
+    st.session_state.user_first_name = ""
 if "user_interests" not in st.session_state:
-    st.session_state.user_interests = ["CRISPR & Gene Editing", "AI in Healthcare"]
+    st.session_state.user_interests = ["CRISPR", "AI in Medicine"]
 if "active_view" not in st.session_state:
-    st.session_state.active_view = "fyp"  # "fyp", "reader", "library"
+    st.session_state.active_view = "fyp"
 if "reader_pmid" not in st.session_state:
     st.session_state.reader_pmid = None
 if "gemini_fyp_cache" not in st.session_state:
@@ -179,13 +289,13 @@ if "gemini_fyp_cache" not in st.session_state:
 
 
 # -----------------------------------------------------------------------------
-# NCBI Entrez Fetch Helpers
+# PubMed Entrez Fetchers
 # -----------------------------------------------------------------------------
 @st.cache_data(ttl=3600, show_spinner=False)
 def search_pubmed_by_interests(interests: List[str], max_results: int = 8) -> List[str]:
-    """Queries PubMed for recent impactful papers matching the given interest topics."""
+    """Queries PubMed for recent high-impact abstracts matching terms."""
     if not interests:
-        interests = ["Biomedical Research"]
+        interests = ["Biomedical Science"]
     clean_terms = [f'"{term}"[Title/Abstract]' for term in interests]
     query = f"({' OR '.join(clean_terms)}) AND hasabstract[text]"
 
@@ -193,9 +303,8 @@ def search_pubmed_by_interests(interests: List[str], max_results: int = 8) -> Li
         with Entrez.esearch(db="pubmed", term=query, sort="pub_date", retmax=max_results) as handle:
             record = Entrez.read(handle)
         return record.get("IdList", [])
-    except Exception as e:
-        st.warning(f"PubMed search encountered a transient issue: {e}")
-        return ["38157930", "32284366"]  # Fallbacks
+    except Exception:
+        return ["38157930", "32284366"]
 
 
 @st.cache_data(ttl=3600, show_spinner=False)
@@ -249,43 +358,49 @@ def fetch_pubmed_article(pmid: str) -> Dict:
 
 
 # -----------------------------------------------------------------------------
-# Google Gemini News & Pedagogical Digest Engine
+# Google Gemini Processing (Untruncated News Generation)
 # -----------------------------------------------------------------------------
 def batch_summarize_feed(papers: List[Dict], gemini_client: Optional[genai.Client]) -> List[Dict]:
-    """Transforms raw papers into accessible student news items with headlines and difficulty ratings."""
+    """Generates complete, untruncated 3-4 sentence explanations with no trailing dots."""
     processed = []
-    
-    # If no Gemini client, provide deterministic fallback representations
     if not gemini_client:
         for p in papers:
+            teaser = p["abstract"][:120] + "." if len(p["abstract"]) > 120 else p["abstract"]
             processed.append({
                 "pmid": p["pmid"],
                 "headline": p["title"],
-                "why_it_matters": p["abstract"][:180] + "...",
+                "teaser": teaser,
+                "why_it_matters": p["abstract"][:300],
                 "difficulty": "Intermediate",
                 "journal": p["journal"],
                 "year": p["year"],
             })
         return processed
 
-    # Build batch generation prompt for Gemini 1.5 Flash
-    papers_payload = [
-        {"id": p["pmid"], "title": p["title"], "abstract": p["abstract"][:600]}
+    payload = [
+        {"id": p["pmid"], "title": p["title"], "abstract": p["abstract"][:900]}
         for p in papers
     ]
 
-    prompt = f"""You are an editor for 'Abstracted', a student-friendly science news site.
-Transform the following biomedical papers into accessible science news items.
+    prompt = f"""You are an executive editor for 'Abstracted', a student-friendly science publication.
+Convert each biomedical study into an accurate, complete news summary for college students.
 
-Papers to process:
-{json.dumps(papers_payload)}
+Requirements:
+1. "headline": Punchy, jargon-free student headline (under 14 words).
+2. "teaser": Exactly one sentence capturing the main finding.
+3. "why_it_matters": MUST be a complete, fully formed explanation consisting of 3 to 4 complete sentences. Explain the mechanism and why it matters in practical healthcare or biology. DO NOT truncate. Never end with an ellipsis ('...').
+4. "difficulty": Choose from 'Beginner', 'Intermediate', or 'Advanced'.
 
-Return ONLY a JSON list of objects matching this exact schema:
+Papers:
+{json.dumps(payload)}
+
+Return ONLY valid JSON matching this schema:
 [
   {{
-    "pmid": "paper pmid string",
-    "headline": "Punchy, exciting, jargon-free student newspaper headline (under 14 words)",
-    "why_it_matters": "Exactly two student-friendly sentences explaining why this discovery matters to everyday biology or medicine.",
+    "pmid": "string id",
+    "headline": "headline string",
+    "teaser": "single complete teaser sentence",
+    "why_it_matters": "complete 3-4 sentence explanation without ellipses",
     "difficulty": "Beginner" | "Intermediate" | "Advanced"
   }}
 ]
@@ -296,29 +411,35 @@ Return ONLY a JSON list of objects matching this exact schema:
             contents=prompt,
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",
-                temperature=0.3,
+                temperature=0.2,
             ),
         )
-        data = json.loads(response.text)
-        data_by_id = {item["pmid"]: item for item in data if "pmid" in item}
+        parsed = json.loads(response.text)
+        by_id = {item["pmid"]: item for item in parsed if "pmid" in item}
 
         for p in papers:
-            meta = data_by_id.get(p["pmid"], {})
+            meta = by_id.get(p["pmid"], {})
+            wim = meta.get("why_it_matters", p["abstract"][:280]).strip()
+            if wim.endswith("..."):
+                wim = wim[:-3].strip() + "."
+            teaser = meta.get("teaser") or (wim.split(".")[0] + "." if "." in wim else wim)
+
             processed.append({
                 "pmid": p["pmid"],
                 "headline": meta.get("headline", p["title"]),
-                "why_it_matters": meta.get("why_it_matters", p["abstract"][:150] + "..."),
+                "teaser": teaser,
+                "why_it_matters": wim,
                 "difficulty": meta.get("difficulty", "Intermediate"),
                 "journal": p["journal"],
                 "year": p["year"],
             })
-    except Exception as e:
-        # Graceful fallback on LLM error
+    except Exception:
         for p in papers:
             processed.append({
                 "pmid": p["pmid"],
                 "headline": p["title"],
-                "why_it_matters": p["abstract"][:160] + "...",
+                "teaser": p["abstract"][:120] + ".",
+                "why_it_matters": p["abstract"][:300] + ".",
                 "difficulty": "Intermediate",
                 "journal": p["journal"],
                 "year": p["year"],
@@ -327,30 +448,30 @@ Return ONLY a JSON list of objects matching this exact schema:
 
 
 def generate_student_digest(article: Dict, gemini_client: Optional[genai.Client]) -> Dict:
-    """Generates an organized, student-accessible lesson breakdown."""
+    """Produces the structured lesson breakdown for an individual paper."""
     if not gemini_client:
         return {
-            "dilemma": f"Study evaluates foundational questions addressed in: {article['title']}",
+            "dilemma": article["abstract"][:250],
             "how_it_works": article["abstract"],
-            "bullets": ["High-yield clinical and experimental observations detailed in original abstract."],
-            "nuance": "Findings must be validated through further reproducible clinical cohorts.",
+            "bullets": ["High-yield mechanism documented in original study text."],
+            "nuance": "Clinical validity requires prospective cohort replication.",
         }
 
-    prompt = f"""Create an engaging study digest for a life-sciences undergraduate.
-Paper Title: {article['title']}
+    prompt = f"""Break down this biomedical paper for an undergraduate student.
+Title: {article['title']}
 Journal: {article['journal']} ({article['year']})
 Abstract: {article['abstract']}
 
-Return ONLY valid JSON with this schema:
+Return valid JSON with:
 {{
-  "dilemma": "Clear, exciting paragraph outlining what problem the researchers were trying to solve and why previous solutions fell short.",
-  "how_it_works": "Plain-English walkthrough of the experiment, model organism/data used, and biological mechanism found.",
+  "dilemma": "One clear paragraph on the specific clinical or biological mystery this paper confronts.",
+  "how_it_works": "Plain-English explanation of experimental model and core cellular/biochemical mechanism found.",
   "bullets": [
-    "Key takeaway 1 (direct finding with numbers/metrics if present)",
-    "Key takeaway 2 (biological implication)",
-    "Key takeaway 3 (practical future application)"
+    "Key takeaway 1 (specific quantified metric or conclusion)",
+    "Key takeaway 2 (biological insight)",
+    "Key takeaway 3 (clinical translation)"
   ],
-  "nuance": "One critical constraint, limitation, or caveat to remember before over-hyping this paper."
+  "nuance": "One critical experimental constraint or cohort limitation."
 }}
 """
     try:
@@ -365,34 +486,38 @@ Return ONLY valid JSON with this schema:
         return json.loads(response.text)
     except Exception:
         return {
-            "dilemma": article["abstract"][:300] + "...",
-            "how_it_works": article["abstract"][300:700] if len(article["abstract"]) > 300 else article["abstract"],
-            "bullets": ["Primary experimental endpoints recorded in PubMed abstract."],
-            "nuance": "Clinical translation requires broader cohort studies.",
+            "dilemma": article["abstract"][:250],
+            "how_it_works": article["abstract"],
+            "bullets": ["Key findings provided in study report."],
+            "nuance": "Translation contingent on further replication.",
         }
 
 
 # -----------------------------------------------------------------------------
-# Supabase Persistence Helpers
+# Supabase Database Helpers
 # -----------------------------------------------------------------------------
 def load_user_profile(sb: Client, user_id: str):
     try:
         res = sb.table("profiles").select("*").eq("id", user_id).execute()
         if res.data:
-            interests = res.data[0].get("interests", [])
-            if interests:
-                st.session_state.user_interests = interests
+            data = res.data[0]
+            saved_interests = data.get("interests", [])
+            valid_interests = [i for i in saved_interests if i in ALL_TOPICS_FLAT]
+            if valid_interests:
+                st.session_state.user_interests = valid_interests
     except Exception:
         pass
 
 
-def save_user_interests(sb: Optional[Client], user_id: Optional[str], interests: List[str]):
-    st.session_state.user_interests = interests
+def save_user_profile_data(sb: Optional[Client], user_id: Optional[str], interests: List[str]):
     if sb and user_id:
         try:
-            sb.table("profiles").upsert({"id": user_id, "interests": interests}).execute()
+            sb.table("profiles").upsert({
+                "id": user_id,
+                "interests": interests,
+            }).execute()
         except Exception as e:
-            st.error(f"Failed to sync interests: {e}")
+            st.error(f"Failed to sync preferences: {e}")
 
 
 def mark_article_read(sb: Optional[Client], user_id: Optional[str], article: Dict):
@@ -412,8 +537,12 @@ def mark_article_read(sb: Optional[Client], user_id: Optional[str], article: Dic
 
 
 def toggle_bookmark(sb: Optional[Client], user_id: Optional[str], article_dict: Dict, current_status: bool):
+    if not user_id:
+        st.toast("Please log in to save articles to your library.", icon="🔒")
+        return current_status
+
     new_status = not current_status
-    if sb and user_id:
+    if sb:
         try:
             sb.table("user_library").upsert({
                 "user_id": user_id,
@@ -423,8 +552,10 @@ def toggle_bookmark(sb: Optional[Client], user_id: Optional[str], article_dict: 
                 "year": str(article_dict.get("year", "2024")),
                 "is_bookmarked": new_status,
             }, on_conflict="user_id,pmid").execute()
+            status_text = "Saved to Library" if new_status else "Removed from Library"
+            st.toast(status_text, icon="🔖" if new_status else "🗑️")
         except Exception as e:
-            st.warning(f"Database sync failed: {e}")
+            st.warning(f"Database sync issue: {e}")
     return new_status
 
 
@@ -434,110 +565,199 @@ def get_user_library(sb: Optional[Client], user_id: Optional[str]):
     try:
         res = sb.table("user_library").select("*").eq("user_id", user_id).order("last_accessed", desc=True).execute()
         records = res.data or []
-        bookmarks = [r for r in records if r.get("is_bookmarked")]
-        history = [r for r in records if r.get("is_read")]
-        return {"bookmarks": bookmarks, "history": history}
+        return {
+            "bookmarks": [r for r in records if r.get("is_bookmarked")],
+            "history": [r for r in records if r.get("is_read")],
+        }
     except Exception:
         return {"bookmarks": [], "history": []}
 
 
 # -----------------------------------------------------------------------------
-# Sidebar: Auth, Interests & Navigation
+# Sidebar: Navigation, Interests & Bottom-Left Profile
 # -----------------------------------------------------------------------------
 supabase_client = get_supabase_client()
 gemini_client = get_gemini_client()
 
 with st.sidebar:
+    # 1. Top Logo Branding with Favicon Color Gradient
     st.markdown('<div class="app-brand">Abstracted.</div>', unsafe_allow_html=True)
-    st.caption("Personalized Science News & Digests")
+    st.caption("Personalized Science News for Students")
     st.write("")
 
-    # --- Supabase Authentication ---
-    st.markdown("#### 👤 Student Account")
-    if supabase_client:
-        if not st.session_state.user:
-            auth_tab1, auth_tab2 = st.tabs(["Log In", "Sign Up"])
-            with auth_tab1:
-                login_email = st.text_input("Email", key="login_email")
-                login_pwd = st.text_input("Password", type="password", key="login_pwd")
-                if st.button("Log In", use_container_width=True, type="primary"):
-                    try:
-                        res = supabase_client.auth.sign_in_with_password({"email": login_email, "password": login_pwd})
-                        st.session_state.user = res.user
-                        load_user_profile(supabase_client, res.user.id)
-                        st.rerun()
-                    except Exception as err:
-                        st.error(f"Login failed: {err}")
-
-            with auth_tab2:
-                signup_email = st.text_input("Email", key="signup_email")
-                signup_pwd = st.text_input("Password", type="password", key="signup_pwd")
-                if st.button("Create Account", use_container_width=True):
-                    try:
-                        res = supabase_client.auth.sign_up({"email": signup_email, "password": signup_pwd})
-                        if res.user:
-                            st.success("Account created! Please log in.")
-                    except Exception as err:
-                        st.error(f"Signup failed: {err}")
-        else:
-            st.success(f"Logged in as **{st.session_state.user.email}**")
-            if st.button("Log Out", use_container_width=True):
-                supabase_client.auth.sign_out()
-                st.session_state.user = None
-                st.rerun()
-    else:
-        st.info("💡 Add `SUPABASE_URL` and `SUPABASE_KEY` to `.streamlit/secrets.toml` to enable persistent cloud sync.")
-
-    st.divider()
-
-    # --- Navigation Section ---
-    st.markdown("#### 🧭 Feed Channels")
-    col_nav1, col_nav2 = st.columns(2)
-    with col_nav1:
-        if st.button("📰 For You", use_container_width=True, type="primary" if st.session_state.active_view == "fyp" else "secondary"):
+    # 2. Main Navigation Buttons
+    nav_col1, nav_col2 = st.columns(2)
+    with nav_col1:
+        if st.button("📰 Feed", use_container_width=True, type="primary" if st.session_state.active_view == "fyp" else "secondary"):
             st.session_state.active_view = "fyp"
             st.rerun()
-    with col_nav2:
+    with nav_col2:
         if st.button("📚 Library", use_container_width=True, type="primary" if st.session_state.active_view == "library" else "secondary"):
             st.session_state.active_view = "library"
             st.rerun()
 
     st.divider()
 
-    # --- Topic Preferences ---
-    st.markdown("#### 🧬 My Research Interests")
-    selected_interests = st.multiselect(
-        "Topics for Your Daily Feed:",
-        options=AVAILABLE_INTERESTS,
-        default=st.session_state.user_interests,
-    )
-    if st.button("Save Preferences", use_container_width=True):
-        user_id = st.session_state.user.id if st.session_state.user else None
-        save_user_interests(supabase_client, user_id, selected_interests)
-        st.session_state.gemini_fyp_cache.clear()  # Invalidate feed cache
-        st.session_state.active_view = "fyp"
-        st.rerun()
+    # 3. Categorized Interests with Auth Gate
+    st.markdown("#### 🧬 Research Interests")
+
+    if st.session_state.user:
+        # Categorized multi-select using topics.json hierarchy
+        valid_defaults = [i for i in st.session_state.user_interests if i in ALL_TOPICS_FLAT]
+
+        # Render categorized taxonomy preview / selection
+        selected_topics = st.multiselect(
+            "Curate your feed topics:",
+            options=ALL_TOPICS_FLAT,
+            default=valid_defaults,
+            help="Select topics loaded dynamically from the research taxonomy.",
+        )
+
+        if st.button("Update Feed", use_container_width=True):
+            st.session_state.user_interests = selected_topics
+            user_id = st.session_state.user.id
+            save_user_profile_data(supabase_client, user_id, selected_topics)
+            st.session_state.gemini_fyp_cache.clear()
+            st.toast("Feed preferences updated!", icon="✨")
+            st.session_state.active_view = "fyp"
+            st.rerun()
+    else:
+        st.info("🔒 **Sign in** to personalize your research interests and sync bookmarks.")
 
     st.divider()
-    # Search by Specific PMID
-    st.markdown("#### 🔎 Lookup Paper")
-    lookup_pmid = st.text_input("PubMed ID (PMID)", placeholder="e.g. 38157930")
-    if st.button("Open Paper", use_container_width=True) and lookup_pmid.strip():
-        st.session_state.reader_pmid = lookup_pmid.strip()
-        st.session_state.active_view = "reader"
-        st.rerun()
+
+    # 4. Bottom-Left Profile & Account Management
+    st.markdown("#### 👤 Account")
+    if supabase_client:
+        if st.session_state.user:
+            u_email = st.session_state.user.email or "Student"
+            u_name = st.session_state.user_first_name or u_email.split("@")[0].capitalize()
+            initials = u_name[0].upper()
+
+            # Profile Badge
+            st.markdown(
+                f"""
+                <div class="user-profile-badge">
+                    <div class="user-avatar-circle">{initials}</div>
+                    <div style="overflow: hidden;">
+                        <div style="font-weight: 700; font-size: 0.88rem; color: #0F172A; text-overflow: ellipsis; white-space: nowrap;">{u_name}</div>
+                        <div style="font-size: 0.74rem; color: #64748B; text-overflow: ellipsis; white-space: nowrap;">{u_email}</div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            # Account Settings Popover / Expander
+            with st.expander("Manage Account"):
+                new_display_name = st.text_input("First Name", value=st.session_state.user_first_name)
+                new_password = st.text_input("New Password", type="password")
+
+                if st.button("Save Changes", use_container_width=True):
+                    try:
+                        update_payload = {}
+                        if new_display_name:
+                            st.session_state.user_first_name = new_display_name
+                            update_payload["data"] = {"first_name": new_display_name}
+                        if new_password:
+                            update_payload["password"] = new_password
+
+                        if update_payload:
+                            supabase_client.auth.update_user(update_payload)
+                            st.success("Account updated successfully!")
+                    except Exception as err:
+                        st.error(f"Update failed: {err}")
+
+                if st.button("Log Out", use_container_width=True):
+                    supabase_client.auth.sign_out()
+                    st.session_state.user = None
+                    st.session_state.user_first_name = ""
+                    st.rerun()
+        else:
+            # Login / Signup Interface
+            auth_choice = st.radio("Access", ["Log In", "Sign Up"], horizontal=True, label_visibility="collapsed")
+            if auth_choice == "Log In":
+                l_email = st.text_input("Email", key="l_email")
+                l_pwd = st.text_input("Password", type="password", key="l_pwd")
+                if st.button("Log In", use_container_width=True, type="primary"):
+                    try:
+                        res = supabase_client.auth.sign_in_with_password({"email": l_email, "password": l_pwd})
+                        st.session_state.user = res.user
+                        metadata = getattr(res.user, "user_metadata", {}) or {}
+                        st.session_state.user_first_name = metadata.get("first_name", "")
+                        load_user_profile(supabase_client, res.user.id)
+                        st.rerun()
+                    except Exception as err:
+                        st.error(f"Login failed: {err}")
+            else:
+                s_fname = st.text_input("First Name", key="s_fname")
+                s_email = st.text_input("Email", key="s_email")
+                s_pwd = st.text_input("Password", type="password", key="s_pwd")
+                if st.button("Create Account", use_container_width=True):
+                    try:
+                        res = supabase_client.auth.sign_up({
+                            "email": s_email,
+                            "password": s_pwd,
+                            "options": {"data": {"first_name": s_fname}},
+                        })
+                        if res.user:
+                            st.success("Account created! Please log in above.")
+                    except Exception as err:
+                        st.error(f"Sign up error: {err}")
+    else:
+        st.caption("Connect Supabase secrets to enable cloud sync.")
 
 
 # -----------------------------------------------------------------------------
-# Main View 1: Personalized "For You" Feed (FYP)
+# Main Application Header & Dual Search Bar
+# -----------------------------------------------------------------------------
+header_col, search_col = st.columns([1.5, 1.3], vertical_alignment="center")
+
+with header_col:
+    st.markdown('<h1 style="font-size: 2.1rem; font-weight: 800; margin: 0; color: #0F172A;">Today\'s Feed</h1>', unsafe_allow_html=True)
+    st.caption("Curated peer-reviewed discoveries explained for students.")
+
+with search_col:
+    # Dual Search Controls in Top-Right
+    s_mode = st.radio(
+        "Search Mode",
+        options=["Topic Discovery", "Direct PMID"],
+        horizontal=True,
+        label_visibility="collapsed",
+    )
+    if s_mode == "Topic Discovery":
+        # Grouped by category
+        chosen_cat = st.selectbox("Category", list(TOPICS_TAXONOMY.keys()), label_visibility="collapsed")
+        cat_topics = TOPICS_TAXONOMY[chosen_cat]
+        c_sub1, c_sub2 = st.columns([3, 1])
+        with c_sub1:
+            chosen_term = st.selectbox("Topic", cat_topics, label_visibility="collapsed")
+        with c_sub2:
+            if st.button("Explore", use_container_width=True):
+                st.session_state.user_interests = [chosen_term]
+                st.session_state.gemini_fyp_cache.clear()
+                st.session_state.active_view = "fyp"
+                st.rerun()
+    else:
+        c_pm1, c_pm2 = st.columns([3, 1])
+        with c_pm1:
+            direct_pmid = st.text_input("Enter PMID", placeholder="e.g. 38157930", label_visibility="collapsed")
+        with c_pm2:
+            if st.button("Open", use_container_width=True) and direct_pmid.strip():
+                st.session_state.reader_pmid = direct_pmid.strip()
+                st.session_state.active_view = "reader"
+                st.rerun()
+
+st.divider()
+
+# -----------------------------------------------------------------------------
+# VIEW 1: Newsfeed ("Today's Feed")
 # -----------------------------------------------------------------------------
 if st.session_state.active_view == "fyp":
-    st.markdown("## 📰 For You")
-    st.caption("Personalized science discoveries synthesized for students from PubMed.")
+    cache_key = "-".join(sorted(st.session_state.user_interests))
 
-    interests_key = "-".join(sorted(st.session_state.user_interests))
-    with st.spinner("Fetching today's top papers and generating student news cards..."):
-        if interests_key not in st.session_state.gemini_fyp_cache:
+    with st.spinner("Compiling latest peer-reviewed findings..."):
+        if cache_key not in st.session_state.gemini_fyp_cache:
             pmid_list = search_pubmed_by_interests(st.session_state.user_interests, max_results=8)
             raw_papers = []
             for pid in pmid_list:
@@ -546,61 +766,75 @@ if st.session_state.active_view == "fyp":
                 except Exception:
                     continue
 
-            feed_news = batch_summarize_feed(raw_papers, gemini_client)
-            st.session_state.gemini_fyp_cache[interests_key] = feed_news
+            summarized = batch_summarize_feed(raw_papers, gemini_client)
+            st.session_state.gemini_fyp_cache[cache_key] = summarized
 
-        news_items = st.session_state.gemini_fyp_cache.get(interests_key, [])
+        news_feed = st.session_state.gemini_fyp_cache.get(cache_key, [])
 
-    if not news_items:
-        st.info("No papers found matching your current interest filters. Try adding more topics from the sidebar.")
+    if not news_feed:
+        st.info("No studies found matching current topics. Select different interests in the sidebar or search bar.")
 
-    # Render Newsfeed Cards
+    # Retrieve current user bookmarks for badge state
     user_id = st.session_state.user.id if st.session_state.user else None
-    user_lib = get_user_library(supabase_client, user_id)
-    bookmarked_pmids = {b["pmid"] for b in user_lib["bookmarks"]}
+    lib_records = get_user_library(supabase_client, user_id)
+    bookmarked_ids = {b["pmid"] for b in lib_records["bookmarks"]}
 
-    for item in news_items:
+    for item in news_feed:
+        is_bookmarked = item["pmid"] in bookmarked_ids
         diff_class = f"badge-{item['difficulty'].lower()}"
-        is_bookmarked = item["pmid"] in bookmarked_pmids
 
         st.markdown(
             f"""
             <div class="news-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-                    <span style="font-size: 0.82rem; color: #64748B; font-weight: 500;">🏛️ {item['journal']} ({item['year']}) &bull; PMID: {item['pmid']}</span>
+                    <span style="font-size: 0.8rem; color: #64748B; font-weight: 500;">🏛️ {item['journal']} ({item['year']}) &bull; PMID: {item['pmid']}</span>
                     <span class="badge {diff_class}">{item['difficulty']}</span>
                 </div>
                 <div class="news-headline">{item['headline']}</div>
-                <div class="why-it-matters"><strong>💡 Why It Matters:</strong> {item['why_it_matters']}</div>
+                <div class="teaser-line"><strong>Summary:</strong> {item['teaser']}</div>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-        col_act1, col_act2, _ = st.columns([1.5, 1.5, 7])
-        with col_act1:
-            if st.button("📖 Read Now", key=f"read_{item['pmid']}", use_container_width=True, type="primary"):
+        # Untruncated summary via Expander
+        with st.expander(f"💡 Why It Matters (Full 3-4 Sentence Breakdown) — PMID {item['pmid']}"):
+            st.markdown(
+                f"""
+                <div class="why-it-matters-container">
+                    {item['why_it_matters']}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+        # Action Buttons
+        btn_col1, btn_col2, _ = st.columns([1.4, 1.4, 7])
+        with btn_col1:
+            if st.button("Read Digest 📖", key=f"read_{item['pmid']}", use_container_width=True, type="primary"):
                 st.session_state.reader_pmid = item["pmid"]
                 st.session_state.active_view = "reader"
                 st.rerun()
 
-        with col_act2:
-            bm_label = "★ Saved" if is_bookmarked else "☆ Bookmark"
-            if st.button(bm_label, key=f"bm_{item['pmid']}", use_container_width=True):
+        with btn_col2:
+            btn_title = "★ Saved" if is_bookmarked else "☆ Bookmark"
+            if st.button(btn_title, key=f"bm_{item['pmid']}", use_container_width=True):
                 toggle_bookmark(supabase_client, user_id, item, is_bookmarked)
                 st.rerun()
 
+        st.write("")
+
 
 # -----------------------------------------------------------------------------
-# Main View 2: Student Library (Saved & History)
+# VIEW 2: Student Library
 # -----------------------------------------------------------------------------
 elif st.session_state.active_view == "library":
     st.markdown("## 📚 My Library")
-    st.caption("Your saved reading bookmarks and studied articles.")
+    st.caption("Your saved papers and study history.")
 
     user_id = st.session_state.user.id if st.session_state.user else None
     if not user_id:
-        st.info("Log in using the sidebar to sync your saved papers across devices.")
+        st.warning("🔒 Please sign in from the sidebar to sync and view your library.")
 
     lib_data = get_user_library(supabase_client, user_id)
     tab_bookmarks, tab_history = st.tabs(["🔖 Saved Bookmarks", "🕒 Reading History"])
@@ -609,84 +843,83 @@ elif st.session_state.active_view == "library":
         bookmarks = lib_data["bookmarks"]
         if bookmarks:
             for b in bookmarks:
-                col_item, col_btn = st.columns([6, 1])
-                with col_item:
+                c1, c2 = st.columns([6, 1])
+                with c1:
                     st.markdown(f"**{b['title']}**")
                     st.caption(f"{b.get('journal', 'Journal')} ({b.get('year', '')}) &bull; PMID: {b['pmid']}")
-                with col_btn:
+                with c2:
                     if st.button("Open", key=f"lib_open_{b['pmid']}", use_container_width=True):
                         st.session_state.reader_pmid = b["pmid"]
                         st.session_state.active_view = "reader"
                         st.rerun()
                 st.divider()
         else:
-            st.caption("No bookmarked articles yet. Click '☆ Bookmark' on any article in your feed.")
+            st.caption("No bookmarked articles yet.")
 
     with tab_history:
         history = lib_data["history"]
         if history:
             for h in history:
-                col_item, col_btn = st.columns([6, 1])
-                with col_item:
+                c1, c2 = st.columns([6, 1])
+                with c1:
                     st.markdown(f"**{h['title']}**")
-                    st.caption(f"PMID: {h['pmid']} &bull; Studied recently")
-                with col_btn:
-                    if st.button("Revisit", key=f"hist_open_{h['pmid']}", use_container_width=True):
+                    st.caption(f"PMID: {h['pmid']} &bull; Studied previously")
+                with c2:
+                    if st.button("Review", key=f"hist_open_{h['pmid']}", use_container_width=True):
                         st.session_state.reader_pmid = h["pmid"]
                         st.session_state.active_view = "reader"
                         st.rerun()
                 st.divider()
         else:
-            st.caption("No read history recorded yet. Open an article to start reading.")
+            st.caption("No read history recorded yet.")
 
 
 # -----------------------------------------------------------------------------
-# Main View 3: Single Article Reader & Lesson Digest
+# VIEW 3: Article Digest Reader
 # -----------------------------------------------------------------------------
 elif st.session_state.active_view == "reader":
     target_pmid = st.session_state.reader_pmid or "38157930"
 
     try:
-        with st.spinner("Retrieving paper from NCBI & structuring digest..."):
-            paper_details = fetch_pubmed_article(target_pmid)
+        with st.spinner("Synthesizing pedagogical breakdown..."):
+            paper = fetch_pubmed_article(target_pmid)
             user_id = st.session_state.user.id if st.session_state.user else None
-            mark_article_read(supabase_client, user_id, paper_details)
-            digest = generate_student_digest(paper_details, gemini_client)
+            mark_article_read(supabase_client, user_id, paper)
+            digest = generate_student_digest(paper, gemini_client)
 
-        if st.button("← Back to Newsfeed"):
+        if st.button("← Back to Today's Feed"):
             st.session_state.active_view = "fyp"
             st.rerun()
 
-        st.markdown(f"## {paper_details['title']}")
-        authors_display = ", ".join(paper_details["authors"][:4]) + (" et al." if len(paper_details["authors"]) > 4 else "")
-        doi_badge = f" &bull; DOI: {paper_details['doi']}" if paper_details["doi"] else ""
+        st.markdown(f"## {paper['title']}")
+        authors_txt = ", ".join(paper["authors"][:4]) + (" et al." if len(paper["authors"]) > 4 else "")
+        doi_suffix = f" &bull; DOI: {paper['doi']}" if paper["doi"] else ""
 
         st.markdown(
             f"""
-            <div style="font-size: 0.9rem; color: #64748B; margin-bottom: 1.25rem;">
-                🏛️ <strong>{paper_details['journal']}</strong> ({paper_details['year']}) &bull; PMID: {paper_details['pmid']}{doi_badge}
-                <br/>✍️ {authors_display}
+            <div style="font-size: 0.9rem; color: #475569; margin-bottom: 1.25rem;">
+                🏛️ <strong>{paper['journal']}</strong> ({paper['year']}) &bull; PMID: {paper['pmid']}{doi_suffix}
+                <br/>✍️ {authors_txt}
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-        # Export & Bookmark Options
-        col_act1, col_act2, col_act3 = st.columns([2, 2, 6])
-        with col_act1:
-            encoded_title = urllib.parse.quote(paper_details["title"])
-            st.link_button("↗ Open Google Doc", f"https://docs.google.com/document/create?title={encoded_title}", use_container_width=True)
-        with col_act2:
-            st.link_button("PubMed Source ↗", f"https://pubmed.ncbi.nlm.nih.gov/{paper_details['pmid']}/", use_container_width=True)
+        col_gdoc, col_pubmed, _ = st.columns([2, 2, 6])
+        with col_gdoc:
+            encoded_title = urllib.parse.quote(paper["title"])
+            st.link_button("↗ Export to Google Doc", f"https://docs.google.com/document/create?title={encoded_title}", use_container_width=True)
+        with col_pubmed:
+            st.link_button("View on PubMed ↗", f"https://pubmed.ncbi.nlm.nih.gov/{paper['pmid']}/", use_container_width=True)
 
         st.write("")
 
-        # Lesson Digest Sections
+        # Pedagogical Lesson Sections
         st.markdown(
             f"""
             <div class="lesson-section">
-                <h4 style="color: #4338CA; margin-bottom: 0.4rem;">🎯 The Research Dilemma</h4>
-                <p style="line-height: 1.6; color: #334155;">{digest['dilemma']}</p>
+                <h4 style="color: #4338CA; margin-bottom: 0.4rem;">🎯 The Core Scientific Problem</h4>
+                <p style="line-height: 1.6; color: #1E293B;">{digest['dilemma']}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -695,8 +928,8 @@ elif st.session_state.active_view == "reader":
         st.markdown(
             f"""
             <div class="lesson-section">
-                <h4 style="color: #0284C7; margin-bottom: 0.4rem;">🔬 How the Experiment Works</h4>
-                <p style="line-height: 1.6; color: #334155;">{digest['how_it_works']}</p>
+                <h4 style="color: #0284C7; margin-bottom: 0.4rem;">🔬 Biological Mechanism & Methods</h4>
+                <p style="line-height: 1.6; color: #1E293B;">{digest['how_it_works']}</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -708,19 +941,27 @@ elif st.session_state.active_view == "reader":
 
         st.markdown(
             f"""
-            <div class="lesson-section" style="border-left: 4px solid #EAB308; margin-top: 1.2rem;">
-                <h4 style="color: #A16207; margin-bottom: 0.4rem;">⚠️ Critical Perspective & Nuance</h4>
-                <p style="line-height: 1.6; color: #475569;">{digest['nuance']}</p>
+            <div class="lesson-section" style="border-left: 4px solid #F59E0B; margin-top: 1rem;">
+                <h4 style="color: #B45309; margin-bottom: 0.4rem;">⚠️ Critical Perspective & Nuance</h4>
+                <p style="line-height: 1.6; color: #1E293B;">{digest['nuance']}</p>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
+        # High-Contrast Unedited Abstract Expander
         with st.expander("📄 View Original Unedited Abstract"):
-            st.write(paper_details["abstract"])
+            st.markdown(
+                f"""
+                <div class="abstract-text-container">
+                    {paper['abstract']}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
     except Exception as exc:
-        st.error(f"Failed to load paper details: {exc}")
+        st.error(f"Error loading study: {exc}")
         if st.button("Return to Feed"):
             st.session_state.active_view = "fyp"
             st.rerun()

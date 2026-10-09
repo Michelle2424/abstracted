@@ -1,0 +1,28 @@
+{
+  "CRISPR & Gene Editing": [
+    "CRISPR-Cas9",
+    "Base Editing",
+    "Prime Editing",
+    "Gene Therapy"
+  ],
+  "Neuroscience": [
+    "Neurodegeneration",
+    "Optogenetics",
+    "Synaptic Plasticity",
+    "Alzheimer's Disease",
+    "Parkinson's Disease"
+  ],
+  "AI & Computational Bio": [
+    "Medical Imaging",
+    "Drug Discovery",
+    "Protein Folding",
+    "Clinical LLMs",
+    "AlphaFold"
+  ],
+  "Immunology & Vaccines": [
+    "mRNA Vaccines",
+    "CAR-T Cell Therapy",
+    "Autoimmunity",
+    "Immunotherapy"
+  ]
+}
