@@ -1,3 +1,5 @@
 streamlit
 biopython
 requests
+google-genai
+supabase
