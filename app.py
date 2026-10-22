@@ -1,4 +1,3 @@
-import base64
 import html
 import json
 import os
@@ -14,28 +13,11 @@ import streamlit as st
 from supabase import Client, create_client
 
 # -----------------------------------------------------------------------------
-# Favicon & SVG Asset: Forest Green Document + Chromosome / Helix
-# Palette: #0B1D15 (Base Dark), #143326 (Doc), #2D5A40 (Fold), #A3B899 (Muted), #E6F4ED (Accent)
+# Streamlit Page Configuration (Warm Dark Academia)
 # -----------------------------------------------------------------------------
-FAVICON_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="8" fill="#0B1D15"/>
-  <!-- Base Paper / Document Sheet with Folded Corner -->
-  <path d="M7 6C7 4.89543 7.89543 4 9 4H19L25 10V26C25 27.1046 24.1046 28 23 28H9C7.89543 28 7 27.1046 7 26V6Z" fill="#143326" stroke="#2D5A40" stroke-width="1.2"/>
-  <path d="M19 4V10H25" fill="#2D5A40"/>
-  <!-- Stylized Chromosome / Double-Helix Crossing Over the Sheet -->
-  <path d="M10 11C13 11 15 15 16 16C17 17 19 21 22 21" stroke="#E6F4ED" stroke-width="2" stroke-linecap="round"/>
-  <path d="M22 11C19 11 17 15 16 16C15 17 13 21 10 21" stroke="#A3B899" stroke-width="2" stroke-linecap="round"/>
-  <circle cx="16" cy="16" r="1.6" fill="#E6F4ED"/>
-  <!-- Base-pair rungs -->
-  <line x1="12" y1="13.2" x2="20" y2="13.2" stroke="#A3B899" stroke-width="1.2" stroke-linecap="round"/>
-  <line x1="12" y1="18.8" x2="20" y2="18.8" stroke="#E6F4ED" stroke-width="1.2" stroke-linecap="round"/>
-</svg>"""
-
-FAVICON_DATA_URI = f"data:image/svg+xml;base64,{base64.b64encode(FAVICON_SVG.encode()).decode()}"
-
 st.set_page_config(
-    page_title="Abstracted | Make Research Accessible",
-    page_icon=FAVICON_DATA_URI,
+    page_title="Abstracted",
+    page_icon="🌿",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -65,251 +47,298 @@ def clean_text(raw_str: Optional[str]) -> str:
 
 
 # -----------------------------------------------------------------------------
-# Global Dark Forest CSS & Strict Streamlit Overrides
+# Warm Dark Academia & Cozy Forest CSS Architecture
 # -----------------------------------------------------------------------------
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 
-    /* 1. Eliminate Streamlit White Top Header */
+    /* 1. Ambient Warm Lamplight & Classic Book Typography */
     header[data-testid="stHeader"] {
         visibility: hidden !important;
         height: 0px !important;
     }
+
     .stApp {
         margin-top: 0px !important;
-        background: linear-gradient(180deg, #091711 0%, #0F281E 100%) !important;
-        color: #E6F4ED !important;
-        font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+        background: radial-gradient(circle at 50% 0%, #1c261f 0%, #0c120e 100%) !important;
+        color: #EAE3D2 !important;
+        font-family: 'Lora', serif !important;
     }
 
-    /* 2. Global Dark Typography */
-    h1, h2, h3, h4, h5, h6 {
-        color: #FFFFFF !important;
-        letter-spacing: -0.025em;
+    h1, h2, h3, h4, h5, h6, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+        font-family: 'Playfair Display', serif !important;
+        color: #F5EFEB !important;
+        letter-spacing: -0.01em;
     }
+
     p, span, label, div {
-        color: #E6F4ED;
-    }
-    .stCaption, [data-testid="stCaptionContainer"] {
-        color: #94BAA5 !important;
-        font-weight: 500 !important;
+        font-family: 'Lora', serif;
+        color: #EAE3D2;
     }
 
-    /* 3. Global Button Contrast */
+    .stCaption, [data-testid="stCaptionContainer"] {
+        color: #A89C8A !important;
+        font-family: 'Lora', serif !important;
+        font-style: italic;
+    }
+
+    /* 2. Dark Wood & Moss Containers */
+    div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlockBorderWrapper"] {
+        background-color: rgba(20, 30, 24, 0.72) !important;
+        border: 1px solid #4a3f35 !important;
+        border-radius: 10px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
+        padding: 0.75rem 1rem !important;
+    }
+
+    /* 3. Mahogany & Walnut Buttons */
     button[kind="primary"] {
-        background-color: #1B4D3E !important;
-        border: 1px solid #2D6B58 !important;
-        border-radius: 9999px !important;
-        color: #FFFFFF !important;
+        background-color: #2C3E2D !important;
+        border: 1px solid #4a3f35 !important;
+        border-radius: 6px !important;
+        color: #EAE3D2 !important;
+        font-family: 'Playfair Display', serif !important;
         font-weight: 600 !important;
+        letter-spacing: 0.03em !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+        transition: all 0.2s ease !important;
     }
     button[kind="primary"]:hover {
-        background-color: #22624F !important;
-        border-color: #4ADE80 !important;
-    }
-    button[kind="primary"] p,
-    button[kind="primary"] span {
+        background-color: #384F39 !important;
+        border-color: #D4AF37 !important;
         color: #FFFFFF !important;
+    }
+    button[kind="primary"] p, button[kind="primary"] span {
+        color: #EAE3D2 !important;
+        font-family: 'Playfair Display', serif !important;
     }
 
     button[kind="secondary"] {
-        background-color: rgba(20, 51, 38, 0.6) !important;
-        border: 1px solid #234E3C !important;
-        border-radius: 9999px !important;
-        color: #E6F4ED !important;
+        background-color: rgba(30, 42, 34, 0.5) !important;
+        border: 1px solid #4a3f35 !important;
+        border-radius: 6px !important;
+        color: #D4C4A8 !important;
+        font-family: 'Playfair Display', serif !important;
         font-weight: 600 !important;
+        letter-spacing: 0.03em !important;
+        transition: all 0.2s ease !important;
     }
     button[kind="secondary"]:hover {
-        background-color: #1B4D3E !important;
-        border-color: #4ADE80 !important;
-        color: #FFFFFF !important;
+        background-color: rgba(44, 62, 45, 0.8) !important;
+        border-color: #705D4A !important;
+        color: #F5EFEB !important;
     }
-    button[kind="secondary"] p,
-    button[kind="secondary"] span {
-        color: #E6F4ED !important;
+    button[kind="secondary"] p, button[kind="secondary"] span {
+        color: #D4C4A8 !important;
+        font-family: 'Playfair Display', serif !important;
     }
 
     div[data-testid="stButton"].danger-btn button {
-        background-color: #7F1D1D !important;
-        border: 1px solid #991B1B !important;
+        background-color: #3E1D1A !important;
+        border: 1px solid #6E322D !important;
     }
     div[data-testid="stButton"].danger-btn button p,
     div[data-testid="stButton"].danger-btn button span {
-        color: #FEE2E2 !important;
-        font-weight: 600 !important;
+        color: #F2D2CF !important;
+        font-family: 'Playfair Display', serif !important;
+    }
+    div[data-testid="stButton"].danger-btn button:hover {
+        background-color: #522723 !important;
+        border-color: #8C4039 !important;
     }
 
-    /* 4. Native Container (Card) Forest Styling */
-    div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlockBorderWrapper"] {
-        background-color: #143326 !important;
-        border: 1px solid #234E3C !important;
-        border-radius: 12px !important;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
-        padding: 0.5rem 0.75rem !important;
+    /* 4. Delicate Library Label Badges */
+    .lib-badge {
+        display: inline-block;
+        background: rgba(234, 227, 210, 0.09);
+        border: 1px solid #705D4A;
+        color: #D4C4A8 !important;
+        padding: 0.2rem 0.65rem;
+        border-radius: 4px;
+        font-family: 'Lora', serif;
+        font-size: 0.78rem;
+        letter-spacing: 0.03em;
+        margin-right: 0.35rem;
+        margin-bottom: 0.35rem;
+    }
+    .lib-badge-gold {
+        background: rgba(212, 175, 55, 0.12);
+        border: 1px solid #9E8232;
+        color: #E5C775 !important;
     }
 
-    /* 5. Sidebar Dark Forest Theme */
+    /* 5. Deep Oak Study Sidebar */
     [data-testid="stSidebar"], section[data-testid="stSidebar"] {
-        background-color: #0B1D15 !important;
-        border-right: 1px solid #1A3E2F !important;
+        background-color: #0E1611 !important;
+        border-right: 1px solid #2B382F !important;
     }
     [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2,
     [data-testid="stSidebar"] h3, [data-testid="stSidebar"] h4 {
-        color: #FFFFFF !important;
+        font-family: 'Playfair Display', serif !important;
+        color: #F5EFEB !important;
     }
     [data-testid="stSidebar"] p, [data-testid="stSidebar"] label,
     [data-testid="stSidebar"] span, [data-testid="stSidebar"] div {
-        color: #E6F4ED !important;
+        font-family: 'Lora', serif;
+        color: #EAE3D2 !important;
     }
 
-    /* 6. BaseWeb Dropdowns & Popovers Contrast Fix (Removes White Boxes) */
+    /* 6. Form Controls & Dropdown Fixes */
     div[data-baseweb="select"],
     div[data-baseweb="select"] > div {
-        background-color: #143326 !important;
-        border-color: #234E3C !important;
-        color: #E6F4ED !important;
+        background-color: rgba(20, 30, 24, 0.85) !important;
+        border-color: #4a3f35 !important;
+        color: #EAE3D2 !important;
+        border-radius: 6px !important;
     }
     div[data-baseweb="popover"],
     div[data-baseweb="popover"] > div,
     ul[role="listbox"],
     ul[role="listbox"] > li {
-        background-color: #143326 !important;
-        border-color: #234E3C !important;
-        color: #E6F4ED !important;
+        background-color: #162019 !important;
+        border-color: #4a3f35 !important;
+        color: #EAE3D2 !important;
     }
     li[role="option"] {
-        background-color: #143326 !important;
-        color: #E6F4ED !important;
+        background-color: #162019 !important;
+        color: #EAE3D2 !important;
+        font-family: 'Lora', serif !important;
     }
     li[role="option"]:hover,
     li[role="option"][aria-selected="true"] {
-        background-color: #1B4D3E !important;
-        color: #FFFFFF !important;
+        background-color: #27382C !important;
+        color: #FFF !important;
     }
     div[data-baseweb="tag"] {
-        background-color: #1B4D3E !important;
-        color: #E6F4ED !important;
-        border: 1px solid #2D6B58 !important;
+        background-color: #26382B !important;
+        color: #D4C4A8 !important;
+        border: 1px solid #544738 !important;
     }
     div[data-baseweb="tag"] span {
-        color: #E6F4ED !important;
+        color: #D4C4A8 !important;
+        font-family: 'Lora', serif !important;
     }
 
-    /* 7. Notification Toasts & Alerts Contrast Fix */
+    input[type="text"], input[type="password"] {
+        background-color: #121A15 !important;
+        color: #EAE3D2 !important;
+        border: 1px solid #4a3f35 !important;
+        border-radius: 6px !important;
+        font-family: 'Lora', serif !important;
+    }
+    input[type="text"]:focus, input[type="password"]:focus {
+        border-color: #D4AF37 !important;
+        box-shadow: 0 0 6px rgba(212, 175, 55, 0.3) !important;
+    }
+
+    /* 7. Toasts & Alerts */
     div[data-testid="stToast"] {
-        background-color: #143326 !important;
-        border: 1px solid #234E3C !important;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
-        border-radius: 10px !important;
+        background-color: #17241B !important;
+        border: 1px solid #5A4E3E !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+        border-radius: 8px !important;
+        color: #EAE3D2 !important;
     }
     div[data-testid="stToast"] p,
     div[data-testid="stToast"] span,
     div[data-testid="stToast"] div {
-        color: #FFFFFF !important;
+        color: #EAE3D2 !important;
+        font-family: 'Lora', serif !important;
     }
     .stAlert, div[data-testid="stAlert"] {
-        background-color: #143326 !important;
-        border: 1px solid #234E3C !important;
-        color: #FFFFFF !important;
-        border-radius: 10px !important;
+        background-color: rgba(24, 34, 27, 0.85) !important;
+        border: 1px solid #4a3f35 !important;
+        color: #EAE3D2 !important;
+        border-radius: 8px !important;
     }
     div[data-testid="stAlert"] p,
     div[data-testid="stAlert"] span,
     div[data-testid="stAlert"] div {
-        color: #FFFFFF !important;
+        color: #EAE3D2 !important;
+        font-family: 'Lora', serif !important;
     }
 
-    /* 8. Text Inputs */
-    input[type="text"], input[type="password"] {
-        background-color: #0E241B !important;
-        color: #FFFFFF !important;
-        border: 1px solid #234E3C !important;
-        border-radius: 8px !important;
-    }
-    input[type="text"]:focus, input[type="password"]:focus {
-        border-color: #4ADE80 !important;
-    }
-
-    /* 9. Tabs */
-    [data-testid="stTabs"] button {
-        background-color: transparent !important;
-        border-radius: 6px !important;
-    }
+    /* 8. Tabs & Expanders */
     [data-testid="stTabs"] button [data-testid="stMarkdownContainer"] p {
-        color: #94BAA5 !important;
+        color: #A89C8A !important;
+        font-family: 'Playfair Display', serif !important;
         font-weight: 600 !important;
     }
     [data-testid="stTabs"] button[aria-selected="true"] {
-        background-color: rgba(35, 78, 60, 0.6) !important;
+        background-color: rgba(44, 62, 45, 0.4) !important;
+        border-bottom: 2px solid #D4AF37 !important;
     }
     [data-testid="stTabs"] button[aria-selected="true"] [data-testid="stMarkdownContainer"] p {
-        color: #4ADE80 !important;
+        color: #EAE3D2 !important;
         font-weight: 700 !important;
     }
 
-    /* 10. Expanders */
     [data-testid="stExpander"] {
-        background-color: #143326 !important;
-        border: 1px solid #234E3C !important;
-        border-radius: 10px !important;
+        background-color: rgba(20, 30, 24, 0.75) !important;
+        border: 1px solid #4a3f35 !important;
+        border-radius: 8px !important;
     }
     [data-testid="stExpander"] details summary {
-        background-color: #112B20 !important;
-        color: #E6F4ED !important;
+        background-color: rgba(28, 40, 33, 0.6) !important;
+        color: #EAE3D2 !important;
+        font-family: 'Playfair Display', serif !important;
         font-weight: 600 !important;
     }
     [data-testid="stExpander"] div[data-testid="stExpanderDetails"] {
-        background-color: #143326 !important;
+        background-color: rgba(18, 26, 21, 0.85) !important;
+        color: #D6CCBD !important;
     }
 
-    /* 11. Landing Hero & Mission Card */
+    /* 9. Editorial Landing & Mission */
     .landing-hero {
         max-width: 900px;
-        margin: 2rem auto 1.5rem auto;
+        margin: 2.5rem auto 1.5rem auto;
         text-align: center;
     }
     .hero-title-serif {
-        font-family: 'Newsreader', Georgia, serif;
-        font-size: clamp(3.2rem, 8vw, 6rem);
-        font-weight: 500;
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(3.2rem, 8vw, 5.8rem);
+        font-weight: 600;
         letter-spacing: 0.08em;
-        line-height: 1.0;
-        color: #FFFFFF !important;
+        line-height: 1.05;
+        color: #F5EFEB !important;
         margin-bottom: 0.85rem;
         text-transform: uppercase;
-        text-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
     }
     .hero-subtitle {
+        font-family: 'Lora', serif;
+        font-style: italic;
         font-size: 1.35rem;
-        color: #A3C9B4 !important;
+        color: #C5BBAA !important;
         max-width: 650px;
         margin: 0 auto 2.5rem auto;
-        font-weight: 400;
-        line-height: 1.5;
+        line-height: 1.6;
     }
     .mission-card {
         max-width: 780px;
         margin: 1.5rem auto 3.5rem auto;
-        padding: 2.2rem 2.6rem;
-        background: #143326;
-        border: 1px solid #234E3C;
-        border-radius: 16px;
-        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+        padding: 2.4rem 2.8rem;
+        background-color: rgba(20, 30, 24, 0.8);
+        border: 1px solid #4a3f35;
+        border-radius: 12px;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
     }
     .mission-title {
-        font-family: 'Newsreader', Georgia, serif;
-        font-size: 1.6rem;
-        font-weight: 500;
-        color: #FFFFFF !important;
-        margin-bottom: 1rem;
-        line-height: 1.3;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.65rem;
+        font-weight: 600;
+        color: #F5EFEB !important;
+        margin-bottom: 1.1rem;
+        line-height: 1.35;
     }
     .mission-text {
+        font-family: 'Lora', serif;
         font-size: 1.02rem;
-        line-height: 1.8;
-        color: #D2E7DC !important;
+        line-height: 1.85;
+        color: #D6CCBD !important;
     }
     </style>
     """,
@@ -852,11 +881,11 @@ gemini_client = get_gemini_client()
 
 if st.session_state.user:
     with st.sidebar:
-        # Top-Left Header: Icon Only (Removed all accompanying text)
+        # Styled Elegant Monogram Logo
         st.markdown(
-            f'<div style="display:flex; align-items:center; margin-bottom:12px;">'
-            f'<img src="{FAVICON_DATA_URI}" width="28" height="28" style="border-radius:7px;" />'
-            f'</div>',
+            '<div style="font-family: \'Playfair Display\', serif; font-size: 1.6rem; color: #D4AF37; font-style: italic; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">'
+            'A. <span style="font-size: 1.05rem; font-style: normal; opacity: 0.9;">🌿</span>'
+            '</div>',
             unsafe_allow_html=True,
         )
         st.caption("Biomedical Research Digest for Students")
@@ -905,11 +934,11 @@ if st.session_state.user:
 
         st.markdown(
             f"""
-            <div style="display:flex; align-items:center; gap:0.65rem; padding:0.65rem 0.8rem; background:#143326; border:1px solid #234E3C; border-radius:10px; margin-bottom:0.5rem;">
-                <div style="width:34px; height:34px; border-radius:50%; background:#1B4D3E; color:#86EFAC; border:1px solid #4ADE80; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem;">{clean_text(initials)}</div>
+            <div style="display:flex; align-items:center; gap:0.65rem; padding:0.65rem 0.8rem; background:rgba(20, 30, 24, 0.7); border:1px solid #4a3f35; border-radius:8px; margin-bottom:0.5rem;">
+                <div style="width:34px; height:34px; border-radius:50%; background:#2C3E2D; color:#E5C775; border:1px solid #705D4A; display:flex; align-items:center; justify-content:center; font-family:'Playfair Display', serif; font-weight:700; font-size:0.9rem;">{clean_text(initials)}</div>
                 <div style="overflow:hidden;">
-                    <div style="font-weight:700; font-size:0.9rem; color:#FFFFFF; text-overflow:ellipsis; white-space:nowrap;">{clean_text(u_display)}</div>
-                    <div style="font-size:0.75rem; color:#94BAA5; text-overflow:ellipsis; white-space:nowrap;">{clean_text(u_email)}</div>
+                    <div style="font-weight:700; font-size:0.9rem; color:#F5EFEB; font-family:'Playfair Display', serif; text-overflow:ellipsis; white-space:nowrap;">{clean_text(u_display)}</div>
+                    <div style="font-size:0.75rem; color:#A89C8A; text-overflow:ellipsis; white-space:nowrap;">{clean_text(u_email)}</div>
                 </div>
             </div>
             """,
@@ -946,7 +975,7 @@ if not st.session_state.user and st.session_state.auth_page == "auth":
     with auth_main:
         with st.container(border=True):
             if st.session_state.auth_mode == "signin":
-                st.markdown("<h3 style='font-family: Newsreader, serif; margin-bottom: 0.2rem; color: #FFFFFF;'>Sign In</h3>", unsafe_allow_html=True)
+                st.markdown("<h3 style='font-family: Playfair Display, serif; margin-bottom: 0.2rem; color: #F5EFEB;'>Sign In</h3>", unsafe_allow_html=True)
                 st.caption("Access your saved library and personalized feed.")
                 st.write("")
 
@@ -975,7 +1004,7 @@ if not st.session_state.user and st.session_state.auth_page == "auth":
                     st.rerun()
 
             else:
-                st.markdown("<h3 style='font-family: Newsreader, serif; margin-bottom: 0.2rem; color: #FFFFFF;'>Create Account</h3>", unsafe_allow_html=True)
+                st.markdown("<h3 style='font-family: Playfair Display, serif; margin-bottom: 0.2rem; color: #F5EFEB;'>Create Account</h3>", unsafe_allow_html=True)
                 st.caption("Join Abstracted to save articles and customize topics.")
                 st.write("")
 
@@ -1011,16 +1040,16 @@ if not st.session_state.user and st.session_state.auth_page == "auth":
 
 
 # =============================================================================
-# VIEW 1B: Shaded Deep Forest Landing Page
+# VIEW 1B: Warm Dark Academia Landing Page
 # =============================================================================
 elif not st.session_state.user and st.session_state.auth_page == "landing" and st.session_state.active_view != "reader":
-    # Top Bar: Icon Only on the Left (No text branding)
+    # Top Bar: Monogram A. 🌿 on the Left
     nav_left, nav_right_1, nav_right_2 = st.columns([7, 1.5, 1.5], vertical_alignment="center")
     with nav_left:
         st.markdown(
-            f'<div style="display:flex; align-items:center;">'
-            f'<img src="{FAVICON_DATA_URI}" width="28" height="28" style="border-radius:7px;" />'
-            f'</div>',
+            '<div style="font-family: \'Playfair Display\', serif; font-size: 1.6rem; color: #D4AF37; font-style: italic; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; cursor: default;">'
+            'A. <span style="font-size: 1.05rem; font-style: normal; opacity: 0.9;">🌿</span>'
+            '</div>',
             unsafe_allow_html=True,
         )
     with nav_right_1:
@@ -1057,7 +1086,7 @@ elif not st.session_state.user and st.session_state.auth_page == "landing" and s
                 The aim of Abstracted is to be a bridge between the labs working at the cutting edge of their fields and the students just beginning to explore their paths.
                 Enjoy!
                 <br/><br/>
-                <span style="font-weight: 600; color: #86EFAC;">— Michelle</span>
+                <span style="font-family: 'Playfair Display', serif; font-weight: 600; color: #D4AF37; font-style: italic;">— Michelle</span>
             </div>
         </div>
         """,
@@ -1074,8 +1103,8 @@ elif st.session_state.active_view == "fyp":
 
     head_left, head_right = st.columns([1.6, 1.2], vertical_alignment="center")
     with head_left:
-        st.markdown(f'<h1 style="font-family: Newsreader, serif; font-size: 2.5rem; font-weight: 500; margin: 0; color: #FFFFFF;">{greeting_header}</h1>', unsafe_allow_html=True)
-        st.markdown('<p style="font-size: 1rem; font-weight: 600; color: #4ADE80; margin: 0.15rem 0 0 0;">Top picks for you</p>', unsafe_allow_html=True)
+        st.markdown(f'<h1 style="font-family: Playfair Display, serif; font-size: 2.5rem; font-weight: 600; margin: 0; color: #F5EFEB;">{greeting_header}</h1>', unsafe_allow_html=True)
+        st.markdown('<p style="font-size: 1.05rem; font-style: italic; color: #D4AF37; margin: 0.15rem 0 0 0;">Top picks for you</p>', unsafe_allow_html=True)
 
     with head_right:
         s_btn1, s_btn2 = st.columns(2)
@@ -1116,7 +1145,7 @@ elif st.session_state.active_view == "fyp":
 
     cache_key = "-".join(sorted(st.session_state.user_interests))
     if cache_key not in st.session_state.gemini_fyp_cache:
-        with st.status("Distilling latest research...", expanded=True) as status:
+        with st.status("Gathering scholarly volumes...", expanded=True) as status:
             st.write("Accessing NCBI PubMed for recent high-yield literature...")
             pmids = search_pubmed_by_interests(st.session_state.user_interests, max_results=8)
 
@@ -1139,25 +1168,34 @@ elif st.session_state.active_view == "fyp":
     if not st.session_state.local_bookmarks and user_id:
         sync_library_state(supabase_client, user_id)
 
-    # Render Feed Cards using Native Streamlit Containers
+    # Render Feed Cards using Native Streamlit Containers with Delicate Library Badges
     for item in articles_feed:
         pmid_str = str(item["pmid"])
         is_bookmarked = pmid_str in st.session_state.local_bookmarks
 
-        impact_chip = " • 🏛️ High-Impact" if item.get("is_high_impact") else ""
-        concepts_formatted = " • ".join([f"`{c}`" for c in item.get("concepts", [])])
+        impact_chip = ' <span class="lib-badge lib-badge-gold">🏛️ High-Impact</span>' if item.get("is_high_impact") else ""
+        badges_line = (
+            f'<div style="margin-bottom: 0.5rem;">'
+            f'<span class="lib-badge">🏛️ {item["journal"]} ({item["year"]})</span>'
+            f'<span class="lib-badge">PMID: {pmid_str}</span>'
+            f'<span class="lib-badge">⏱️ {item.get("read_time_min", 2)} min read</span>'
+            f'<span class="lib-badge">{item["difficulty"]}</span>'
+            f'{impact_chip}'
+            f'</div>'
+        )
+
+        concepts_badges = " ".join([f'<span class="lib-badge">{clean_text(c)}</span>' for c in item.get("concepts", [])])
 
         with st.container(border=True):
-            st.markdown(
-                f"🏛️ **{item['journal']}** ({item['year']}) • **PMID:** `{pmid_str}` • ⏱️ {item.get('read_time_min', 2)} min read • `{item['difficulty']}`{impact_chip}"
-            )
-            st.markdown(f"### {item['headline']}")
+            st.markdown(badges_line, unsafe_allow_html=True)
+            st.markdown(f"<h3 style='margin-top:0.2rem; margin-bottom:0.5rem;'>{item['headline']}</h3>", unsafe_allow_html=True)
             st.markdown(f"**Summary:** {item['preview_sentences']}")
             st.markdown(f"💡 **Why It Matters:** {item['why_it_matters']}")
 
-            if concepts_formatted:
-                st.markdown(f"**Key Concepts:** {concepts_formatted}")
+            if concepts_badges:
+                st.markdown(f"<div style='margin-top:0.5rem;'><strong style='font-size:0.85rem; color:#A89C8A;'>Key Concepts:</strong> {concepts_badges}</div>", unsafe_allow_html=True)
 
+            st.write("")
             btn_c1, btn_c2, _ = st.columns([1.5, 1.5, 7])
             with btn_c1:
                 if st.button("Read Digest 📖", key=f"digest_{pmid_str}", use_container_width=True, type="primary"):
@@ -1178,7 +1216,7 @@ elif st.session_state.active_view == "fyp":
 # =============================================================================
 elif st.session_state.active_view == "library":
     u_display = clean_text(st.session_state.user_display_name or "Student")
-    st.markdown(f'<h1 style="font-family: Newsreader, serif; font-size: 2.5rem; font-weight: 500; margin: 0; color: #FFFFFF;">{u_display}\'s Library</h1>', unsafe_allow_html=True)
+    st.markdown(f'<h1 style="font-family: Playfair Display, serif; font-size: 2.5rem; font-weight: 600; margin: 0; color: #F5EFEB;">{u_display}\'s Library</h1>', unsafe_allow_html=True)
     st.caption("Personal research vault & studied publications.")
 
     user_id = st.session_state.user.id if st.session_state.user else None
@@ -1201,8 +1239,12 @@ elif st.session_state.active_view == "library":
                 with st.container(border=True):
                     c1, c2, c3 = st.columns([6, 1.2, 1])
                     with c1:
-                        st.markdown(f"#### {clean_text(b['title'])}")
-                        st.markdown(f"🏛️ **{clean_text(b.get('journal', 'Journal'))}** ({clean_text(str(b.get('year', '')))}) • **PMID:** `{clean_text(str(b['pmid']))}`")
+                        st.markdown(f"<h4 style='margin-bottom:0.3rem;'>{clean_text(b['title'])}</h4>", unsafe_allow_html=True)
+                        st.markdown(
+                            f'<span class="lib-badge">🏛️ {clean_text(b.get("journal", "Journal"))} ({clean_text(str(b.get("year", "")))})</span>'
+                            f'<span class="lib-badge">PMID: {clean_text(str(b["pmid"]))}</span>',
+                            unsafe_allow_html=True,
+                        )
                     with c2:
                         if st.button("Read", key=f"lib_read_{b['pmid']}", use_container_width=True, type="primary"):
                             st.session_state.reader_pmid = str(b["pmid"])
@@ -1228,8 +1270,8 @@ elif st.session_state.active_view == "library":
                 with st.container(border=True):
                     c1, c2 = st.columns([6, 1.2])
                     with c1:
-                        st.markdown(f"#### {clean_text(h['title'])}")
-                        st.markdown(f"**PMID:** `{clean_text(str(h['pmid']))}` • Studied recently")
+                        st.markdown(f"<h4 style='margin-bottom:0.3rem;'>{clean_text(h['title'])}</h4>", unsafe_allow_html=True)
+                        st.markdown(f'<span class="lib-badge">PMID: {clean_text(str(h["pmid"]))}</span> <span style="font-style:italic; font-size:0.85rem; color:#A89C8A;">Studied recently</span>', unsafe_allow_html=True)
                     with c2:
                         if st.button("Revisit", key=f"hist_revisit_{h['pmid']}", use_container_width=True, type="secondary"):
                             st.session_state.reader_pmid = str(h["pmid"])
@@ -1247,7 +1289,7 @@ elif st.session_state.active_view == "reader":
     target_pmid = st.session_state.reader_pmid or "38157930"
 
     try:
-        with st.spinner("Synthesizing pedagogical digest..."):
+        with st.spinner("Deciphering text & formulating digest..."):
             paper = fetch_pubmed_article(target_pmid)
             user_id = st.session_state.user.id if st.session_state.user else None
             mark_article_read(supabase_client, user_id, paper)
@@ -1257,15 +1299,20 @@ elif st.session_state.active_view == "reader":
             st.session_state.active_view = "fyp"
             st.rerun()
 
-        st.markdown(f"<h2 style='font-family: Newsreader, serif; font-size: 2.2rem; color:#FFFFFF;'>{clean_text(paper['title'])}</h2>", unsafe_allow_html=True)
+        st.markdown(f"<h2 style='font-family: Playfair Display, serif; font-size: 2.2rem; color:#F5EFEB;'>{clean_text(paper['title'])}</h2>", unsafe_allow_html=True)
         authors_display = ", ".join(paper["authors"][:4]) + (" et al." if len(paper["authors"]) > 4 else "")
-        doi_suffix = f" • DOI: {paper['doi']}" if paper["doi"] else ""
-        impact_chip = " • 🏛️ High-Impact Journal" if paper.get("is_high_impact") else ""
+        impact_chip = ' <span class="lib-badge lib-badge-gold">🏛️ High-Impact Journal</span>' if paper.get("is_high_impact") else ""
 
-        st.markdown(
-            f"🏛️ **{paper['journal']}** ({paper['year']}) • **PMID:** `{paper['pmid']}`{doi_suffix} • ⏱️ {paper.get('read_time_min', 2)} min read{impact_chip}"
+        badges_header = (
+            f'<div style="margin-bottom: 0.6rem;">'
+            f'<span class="lib-badge">🏛️ {paper["journal"]} ({paper["year"]})</span>'
+            f'<span class="lib-badge">PMID: {paper["pmid"]}</span>'
+            f'<span class="lib-badge">⏱️ {paper.get("read_time_min", 2)} min read</span>'
+            f'{impact_chip}'
+            f'</div>'
         )
-        st.markdown(f"✍️ **Authors:** {authors_display}")
+        st.markdown(badges_header, unsafe_allow_html=True)
+        st.markdown(f"✍️ **Authors:** *{authors_display}*")
 
         col_gdoc, col_pubmed, _ = st.columns([2, 2, 6])
         with col_gdoc:
@@ -1278,30 +1325,30 @@ elif st.session_state.active_view == "reader":
 
         # 1. Context
         with st.container(border=True):
-            st.markdown("#### 1. CONTEXT & CLINICAL PROBLEM")
+            st.markdown("<h4 style='color:#D4AF37;'>1. CONTEXT & CLINICAL PROBLEM</h4>", unsafe_allow_html=True)
             st.markdown(clean_text(digest.get("context", "")))
 
         # 2. Abstract Summary
         with st.container(border=True):
-            st.markdown("#### 2. ABSTRACT SUMMARY")
+            st.markdown("<h4 style='color:#D4AF37;'>2. ABSTRACT SUMMARY</h4>", unsafe_allow_html=True)
             st.markdown(clean_text(digest.get("abstract_summary", "")))
 
         # 3. Methods & Lab Skills to Know
         with st.container(border=True):
-            st.markdown("#### 3. METHODS AND LAB SKILLS TO KNOW")
+            st.markdown("<h4 style='color:#D4AF37;'>3. METHODS AND LAB SKILLS TO KNOW</h4>", unsafe_allow_html=True)
             skills = digest.get("methods_and_lab_skills", [])
             for s in skills:
                 st.markdown(f"- **{clean_text(s.get('skill', ''))}:** {clean_text(s.get('description', ''))}")
 
         # 4. Critical Takeaways
         with st.container(border=True):
-            st.markdown("#### 4. CRITICAL TAKEAWAYS & NEXT STEPS")
+            st.markdown("<h4 style='color:#D4AF37;'>4. CRITICAL TAKEAWAYS & NEXT STEPS</h4>", unsafe_allow_html=True)
             crit = digest.get("critical_takeaways", {})
             st.markdown(f"**Research Importance:** {clean_text(crit.get('importance', ''))}")
             st.markdown(f"**Next Experiments Required:** {clean_text(crit.get('next_steps', ''))}")
             st.markdown("**Suggested Topics for Further Reading:**")
             for topic in crit.get("further_reading", []):
-                st.markdown(f"- {clean_text(topic)}")
+                st.markdown(f"- *{clean_text(topic)}*")
 
         # 5. Unedited Abstract Expander
         with st.expander("View original abstract"):
