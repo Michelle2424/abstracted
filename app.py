@@ -47,7 +47,7 @@ def clean_text(raw_str: Optional[str]) -> str:
 
 
 # -----------------------------------------------------------------------------
-# Warm Dark Academia & Cozy Forest CSS Architecture
+# Warm Dark Academia CSS Architecture & Overrides
 # -----------------------------------------------------------------------------
 st.markdown(
     """
@@ -93,48 +93,59 @@ st.markdown(
         padding: 0.75rem 1rem !important;
     }
 
-    /* 3. Mahogany & Walnut Buttons */
+    /* 3. Comprehensive Button Theming (Fixes Link Buttons & Reader Buttons) */
+    div[data-testid="stButton"] button, 
+    div[data-testid="stLinkButton"] a,
+    div[data-testid="stDownloadButton"] button,
+    a[kind="secondary"],
+    a[kind="primary"],
+    button[kind="secondary"],
     button[kind="primary"] {
         background-color: #2C3E2D !important;
+        color: #EAE3D2 !important;
         border: 1px solid #4a3f35 !important;
         border-radius: 6px !important;
-        color: #EAE3D2 !important;
         font-family: 'Playfair Display', serif !important;
         font-weight: 600 !important;
         letter-spacing: 0.03em !important;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+        text-decoration: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         transition: all 0.2s ease !important;
     }
+
+    div[data-testid="stButton"] button:hover, 
+    div[data-testid="stLinkButton"] a:hover,
+    div[data-testid="stDownloadButton"] button:hover,
+    a[kind="secondary"]:hover,
+    a[kind="primary"]:hover,
+    button[kind="secondary"]:hover,
     button[kind="primary"]:hover {
-        background-color: #384F39 !important;
-        border-color: #D4AF37 !important;
+        background-color: #3E4F3E !important;
+        border-color: #705D4A !important;
         color: #FFFFFF !important;
     }
-    button[kind="primary"] p, button[kind="primary"] span {
+
+    div[data-testid="stButton"] button p,
+    div[data-testid="stButton"] button span,
+    div[data-testid="stLinkButton"] a p,
+    div[data-testid="stLinkButton"] a span,
+    div[data-testid="stDownloadButton"] button p,
+    div[data-testid="stDownloadButton"] button span {
         color: #EAE3D2 !important;
         font-family: 'Playfair Display', serif !important;
     }
 
-    button[kind="secondary"] {
-        background-color: rgba(30, 42, 34, 0.5) !important;
-        border: 1px solid #4a3f35 !important;
-        border-radius: 6px !important;
-        color: #D4C4A8 !important;
-        font-family: 'Playfair Display', serif !important;
-        font-weight: 600 !important;
-        letter-spacing: 0.03em !important;
-        transition: all 0.2s ease !important;
-    }
-    button[kind="secondary"]:hover {
-        background-color: rgba(44, 62, 45, 0.8) !important;
-        border-color: #705D4A !important;
-        color: #F5EFEB !important;
-    }
-    button[kind="secondary"] p, button[kind="secondary"] span {
-        color: #D4C4A8 !important;
-        font-family: 'Playfair Display', serif !important;
+    div[data-testid="stButton"] button:hover p,
+    div[data-testid="stButton"] button:hover span,
+    div[data-testid="stLinkButton"] a:hover p,
+    div[data-testid="stLinkButton"] a:hover span {
+        color: #FFFFFF !important;
     }
 
+    /* Logout Button Styling */
     div[data-testid="stButton"].danger-btn button {
         background-color: #3E1D1A !important;
         border: 1px solid #6E322D !important;
@@ -169,7 +180,7 @@ st.markdown(
         color: #E5C775 !important;
     }
 
-    /* 5. Deep Oak Study Sidebar */
+    /* 5. Deep Oak Study Sidebar & Artifact Fix */
     [data-testid="stSidebar"], section[data-testid="stSidebar"] {
         background-color: #0E1611 !important;
         border-right: 1px solid #2B382F !important;
@@ -185,42 +196,60 @@ st.markdown(
         color: #EAE3D2 !important;
     }
 
-    /* 6. Form Controls & Dropdown Fixes */
-    div[data-baseweb="select"],
-    div[data-baseweb="select"] > div {
+    /* Hide the sidebar collapse button to eliminate keyboard_double hover artifact */
+    [data-testid="stSidebarCollapseButton"] {
+        display: none !important;
+    }
+
+    /* 6. BaseWeb Dropdowns & Popovers Strict Overrides (Portal Targeting) */
+    .stSelectbox div[data-baseweb="select"], 
+    .stMultiSelect div[data-baseweb="select"] {
         background-color: rgba(20, 30, 24, 0.85) !important;
         border-color: #4a3f35 !important;
-        color: #EAE3D2 !important;
-        border-radius: 6px !important;
     }
+    .stSelectbox div[data-baseweb="select"] span,
+    .stMultiSelect div[data-baseweb="select"] span,
+    .stSelectbox div[data-baseweb="select"] div,
+    .stMultiSelect div[data-baseweb="select"] div {
+        color: #EAE3D2 !important;
+    }
+
+    /* Target the root portal for dropdown menus */
     div[data-baseweb="popover"],
     div[data-baseweb="popover"] > div,
-    ul[role="listbox"],
-    ul[role="listbox"] > li {
+    ul[data-baseweb="menu"],
+    div[data-testid="stVirtualDropdown"] {
         background-color: #162019 !important;
         border-color: #4a3f35 !important;
-        color: #EAE3D2 !important;
     }
+
+    /* Dropdown Options */
     li[role="option"] {
         background-color: #162019 !important;
         color: #EAE3D2 !important;
         font-family: 'Lora', serif !important;
     }
+
     li[role="option"]:hover,
     li[role="option"][aria-selected="true"] {
-        background-color: #27382C !important;
-        color: #FFF !important;
+        background-color: #2C3E2D !important;
+        color: #D4AF37 !important;
     }
+
+    /* Multiselect Tags */
+    span[data-baseweb="tag"],
     div[data-baseweb="tag"] {
-        background-color: #26382B !important;
-        color: #D4C4A8 !important;
-        border: 1px solid #544738 !important;
+        background-color: #2C3E2D !important;
+        color: #EAE3D2 !important;
+        border: 1px solid #4a3f35 !important;
     }
+    span[data-baseweb="tag"] span,
     div[data-baseweb="tag"] span {
-        color: #D4C4A8 !important;
+        color: #EAE3D2 !important;
         font-family: 'Lora', serif !important;
     }
 
+    /* 7. Input Fields */
     input[type="text"], input[type="password"] {
         background-color: #121A15 !important;
         color: #EAE3D2 !important;
@@ -233,7 +262,7 @@ st.markdown(
         box-shadow: 0 0 6px rgba(212, 175, 55, 0.3) !important;
     }
 
-    /* 7. Toasts & Alerts */
+    /* 8. Toasts & Alerts */
     div[data-testid="stToast"] {
         background-color: #17241B !important;
         border: 1px solid #5A4E3E !important;
@@ -247,6 +276,7 @@ st.markdown(
         color: #EAE3D2 !important;
         font-family: 'Lora', serif !important;
     }
+
     .stAlert, div[data-testid="stAlert"] {
         background-color: rgba(24, 34, 27, 0.85) !important;
         border: 1px solid #4a3f35 !important;
@@ -260,7 +290,7 @@ st.markdown(
         font-family: 'Lora', serif !important;
     }
 
-    /* 8. Tabs & Expanders */
+    /* 9. Tabs & Expanders */
     [data-testid="stTabs"] button [data-testid="stMarkdownContainer"] p {
         color: #A89C8A !important;
         font-family: 'Playfair Display', serif !important;
@@ -291,10 +321,10 @@ st.markdown(
         color: #D6CCBD !important;
     }
 
-    /* 9. Editorial Landing & Mission */
+    /* 10. Landing Hero */
     .landing-hero {
         max-width: 900px;
-        margin: 2.5rem auto 1.5rem auto;
+        margin: 3.5rem auto 1.5rem auto;
         text-align: center;
     }
     .hero-title-serif {
@@ -307,38 +337,6 @@ st.markdown(
         margin-bottom: 0.85rem;
         text-transform: uppercase;
         text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
-    }
-    .hero-subtitle {
-        font-family: 'Lora', serif;
-        font-style: italic;
-        font-size: 1.35rem;
-        color: #C5BBAA !important;
-        max-width: 650px;
-        margin: 0 auto 2.5rem auto;
-        line-height: 1.6;
-    }
-    .mission-card {
-        max-width: 780px;
-        margin: 1.5rem auto 3.5rem auto;
-        padding: 2.4rem 2.8rem;
-        background-color: rgba(20, 30, 24, 0.8);
-        border: 1px solid #4a3f35;
-        border-radius: 12px;
-        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
-    }
-    .mission-title {
-        font-family: 'Playfair Display', serif;
-        font-size: 1.65rem;
-        font-weight: 600;
-        color: #F5EFEB !important;
-        margin-bottom: 1.1rem;
-        line-height: 1.35;
-    }
-    .mission-text {
-        font-family: 'Lora', serif;
-        font-size: 1.02rem;
-        line-height: 1.85;
-        color: #D6CCBD !important;
     }
     </style>
     """,
@@ -414,13 +412,23 @@ def get_supabase_client() -> Optional[Client]:
     if not url or not key:
         return None
     try:
-        return create_client(url, key)
+        # Preserve client instance across Streamlit reruns
+        if "supabase_client" not in st.session_state or st.session_state.supabase_client is None:
+            st.session_state.supabase_client = create_client(url, key)
+
+        # Restore user authentication header into PostgREST client if logged in
+        if "auth_token" in st.session_state and st.session_state.auth_token:
+            st.session_state.supabase_client.postgrest.auth(st.session_state.auth_token)
+
+        return st.session_state.supabase_client
     except Exception:
         return None
 
 
 if "user" not in st.session_state:
     st.session_state.user = None
+if "auth_token" not in st.session_state:
+    st.session_state.auth_token = None
 if "user_display_name" not in st.session_state:
     st.session_state.user_display_name = ""
 if "user_interests" not in st.session_state:
@@ -428,9 +436,9 @@ if "user_interests" not in st.session_state:
 if "active_view" not in st.session_state:
     st.session_state.active_view = "fyp"
 if "auth_page" not in st.session_state:
-    st.session_state.auth_page = "landing"  # "landing" or "auth"
+    st.session_state.auth_page = "landing"
 if "auth_mode" not in st.session_state:
-    st.session_state.auth_mode = "signin"  # "signin" or "signup"
+    st.session_state.auth_mode = "signin"
 if "reader_pmid" not in st.session_state:
     st.session_state.reader_pmid = None
 if "gemini_fyp_cache" not in st.session_state:
@@ -721,7 +729,7 @@ Output ONLY valid JSON matching this schema:
 
 
 # -----------------------------------------------------------------------------
-# Supabase Operations & Reliable Bookmarking
+# Supabase Operations & Reliable Bookmarking Fixes
 # -----------------------------------------------------------------------------
 def load_user_profile(sb: Client, user_id: str, email: str):
     try:
@@ -747,31 +755,32 @@ def load_user_profile(sb: Client, user_id: str, email: str):
 
 
 def sync_library_state(sb: Optional[Client], user_id: Optional[str]):
-    """Fetches user's current bookmarked articles into session state for immediate, reliable UI feedback."""
+    """Fetches user's current bookmarked and read articles into session state."""
     if sb and user_id:
         try:
-            res = sb.table("user_library").select("*").eq("user_id", user_id).eq("is_bookmarked", True).execute()
-            if res.data:
-                st.session_state.local_bookmarks = {str(r["pmid"]) for r in res.data}
-                st.session_state.local_saved_items = {
-                    str(r["pmid"]): {
-                        "pmid": str(r["pmid"]),
-                        "title": clean_text(r.get("title") or "Untitled Paper"),
-                        "journal": clean_text(r.get("journal") or "Biomedical Source"),
-                        "year": clean_text(str(r.get("year") or "2024")),
-                        "is_bookmarked": True,
-                    }
-                    for r in res.data
+            res = sb.table("user_library").select("*").eq("user_id", user_id).execute()
+            records = res.data or []
+            for r in records:
+                pmid = str(r["pmid"])
+                b_status = r.get("is_bookmarked") is True or str(r.get("is_bookmarked")).lower() == "true"
+                h_status = r.get("is_read") is True or str(r.get("is_read")).lower() == "true"
+                item = {
+                    "pmid": pmid,
+                    "title": clean_text(r.get("title") or "Untitled Paper"),
+                    "journal": clean_text(r.get("journal") or "Biomedical Source"),
+                    "year": clean_text(str(r.get("year") or "2024")),
+                    "is_bookmarked": b_status,
+                    "is_read": h_status,
                 }
-            else:
-                st.session_state.local_bookmarks = set()
-                st.session_state.local_saved_items = {}
+                st.session_state.local_saved_items[pmid] = item
+                if b_status:
+                    st.session_state.local_bookmarks.add(pmid)
         except Exception:
             pass
 
 
 def toggle_bookmark(sb: Optional[Client], user_id: Optional[str], article_dict: Dict, current_status: bool):
-    """Reliably persists bookmarking in Supabase AND in memory for guaranteed library display."""
+    """Reliably persists bookmarking in Supabase AND in memory without overwriting reading status."""
     if not user_id:
         st.toast("Please sign in to save articles to your library.", icon="🔒")
         return current_status
@@ -782,20 +791,24 @@ def toggle_bookmark(sb: Optional[Client], user_id: Optional[str], article_dict: 
     journal_str = clean_text(article_dict.get("journal") or "Biomedical Source")
     year_str = clean_text(str(article_dict.get("year") or "2024"))
 
-    # Update session cache immediately
+    existing = st.session_state.local_saved_items.get(pmid_str, {})
+    is_read_val = existing.get("is_read", False)
+
+    item = {
+        "pmid": pmid_str,
+        "title": title_str,
+        "journal": journal_str,
+        "year": year_str,
+        "is_bookmarked": new_status,
+        "is_read": is_read_val,
+    }
+    st.session_state.local_saved_items[pmid_str] = item
+
     if new_status:
         st.session_state.local_bookmarks.add(pmid_str)
-        st.session_state.local_saved_items[pmid_str] = {
-            "pmid": pmid_str,
-            "title": title_str,
-            "journal": journal_str,
-            "year": year_str,
-            "is_bookmarked": True,
-        }
         st.toast("Saved to your Library!", icon="🔖")
     else:
         st.session_state.local_bookmarks.discard(pmid_str)
-        st.session_state.local_saved_items.pop(pmid_str, None)
         st.toast("Removed from Library.", icon="🗑️")
 
     # Persist to Supabase
@@ -809,6 +822,8 @@ def toggle_bookmark(sb: Optional[Client], user_id: Optional[str], article_dict: 
                 "year": year_str,
                 "is_bookmarked": new_status,
             }
+            if is_read_val:
+                row_payload["is_read"] = True
             sb.table("user_library").upsert(row_payload, on_conflict="user_id,pmid").execute()
         except Exception as e:
             st.error(f"Failed to sync bookmark to cloud: {e}")
@@ -817,60 +832,77 @@ def toggle_bookmark(sb: Optional[Client], user_id: Optional[str], article_dict: 
 
 
 def mark_article_read(sb: Optional[Client], user_id: Optional[str], article: Dict):
+    """Registers paper in reading history without overwriting existing bookmark status."""
+    pmid_str = str(article["pmid"])
+    is_b = pmid_str in st.session_state.local_bookmarks
+    existing = st.session_state.local_saved_items.get(pmid_str, {})
+    b_val = is_b or existing.get("is_bookmarked", False)
+
+    item = {
+        "pmid": pmid_str,
+        "title": clean_text(article["title"]),
+        "journal": clean_text(article["journal"]),
+        "year": clean_text(str(article["year"])),
+        "is_bookmarked": b_val,
+        "is_read": True,
+    }
+    st.session_state.local_saved_items[pmid_str] = item
+
     if not (sb and user_id):
         return
     try:
-        sb.table("user_library").upsert({
+        row_payload = {
             "user_id": user_id,
-            "pmid": str(article["pmid"]),
+            "pmid": pmid_str,
             "title": clean_text(article["title"]),
             "journal": clean_text(article["journal"]),
             "year": clean_text(str(article["year"])),
             "is_read": True,
-        }, on_conflict="user_id,pmid").execute()
+        }
+        if b_val:
+            row_payload["is_bookmarked"] = True
+        sb.table("user_library").upsert(row_payload, on_conflict="user_id,pmid").execute()
     except Exception:
         pass
 
 
 def get_user_library(sb: Optional[Client], user_id: Optional[str]):
-    """Pulls directly from Supabase with is_bookmarked=True, falling back to session state."""
-    if not (sb and user_id):
-        bookmarks = list(st.session_state.local_saved_items.values())
-        return {"bookmarks": bookmarks, "history": []}
+    """Pulls library records from Supabase without ordering errors."""
+    bookmarks = []
+    history = []
 
-    try:
-        res = sb.table("user_library").select("*").eq("user_id", user_id).order("last_accessed", desc=True).execute()
-        records = res.data or []
-        bookmarks = [
-            {
-                "pmid": str(r["pmid"]),
-                "title": clean_text(r.get("title") or "Untitled Paper"),
-                "journal": clean_text(r.get("journal") or "Biomedical Source"),
-                "year": clean_text(str(r.get("year") or "")),
-                "is_bookmarked": True,
-            }
-            for r in records if r.get("is_bookmarked") is True
-        ]
-        history = [
-            {
-                "pmid": str(r["pmid"]),
-                "title": clean_text(r.get("title") or "Untitled Paper"),
-                "journal": clean_text(r.get("journal") or "Biomedical Source"),
-                "year": clean_text(str(r.get("year") or "")),
-                "is_bookmarked": r.get("is_bookmarked", False),
-            }
-            for r in records if r.get("is_read") is True
-        ]
+    if sb and user_id:
+        try:
+            # Query without .order("last_accessed", desc=True) to prevent column failure
+            res = sb.table("user_library").select("*").eq("user_id", user_id).execute()
+            records = res.data or []
+            for r in records:
+                pmid = str(r["pmid"])
+                b_status = r.get("is_bookmarked") is True or str(r.get("is_bookmarked")).lower() == "true"
+                h_status = r.get("is_read") is True or str(r.get("is_read")).lower() == "true"
+                item = {
+                    "pmid": pmid,
+                    "title": clean_text(r.get("title") or "Untitled Paper"),
+                    "journal": clean_text(r.get("journal") or "Biomedical Source"),
+                    "year": clean_text(str(r.get("year") or "")),
+                    "is_bookmarked": b_status,
+                    "is_read": h_status,
+                }
+                if b_status:
+                    bookmarks.append(item)
+                    st.session_state.local_bookmarks.add(pmid)
+                if h_status:
+                    history.append(item)
+                st.session_state.local_saved_items[pmid] = item
 
-        # Update in-memory cache to stay in sync
-        for b in bookmarks:
-            st.session_state.local_saved_items[b["pmid"]] = b
-            st.session_state.local_bookmarks.add(b["pmid"])
+            return {"bookmarks": bookmarks, "history": history}
+        except Exception:
+            pass
 
-        return {"bookmarks": bookmarks, "history": history}
-    except Exception:
-        bookmarks = list(st.session_state.local_saved_items.values())
-        return {"bookmarks": bookmarks, "history": []}
+    # Seamless fallback to session cache
+    bookmarks = [v for v in st.session_state.local_saved_items.values() if v.get("is_bookmarked")]
+    history = [v for v in st.session_state.local_saved_items.values() if v.get("is_read")]
+    return {"bookmarks": bookmarks, "history": history}
 
 
 # -----------------------------------------------------------------------------
@@ -881,10 +913,10 @@ gemini_client = get_gemini_client()
 
 if st.session_state.user:
     with st.sidebar:
-        # Styled Elegant Monogram Logo
+        # Monogram Logo (Clean A.)
         st.markdown(
-            '<div style="font-family: \'Playfair Display\', serif; font-size: 1.6rem; color: #D4AF37; font-style: italic; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">'
-            'A. <span style="font-size: 1.05rem; font-style: normal; opacity: 0.9;">🌿</span>'
+            '<div style="font-family: \'Playfair Display\', serif; font-size: 1.6rem; color: #D4AF37; font-style: italic; font-weight: 700; margin-bottom: 8px;">'
+            'A.'
             '</div>',
             unsafe_allow_html=True,
         )
@@ -951,6 +983,7 @@ if st.session_state.user:
             if supabase_client:
                 supabase_client.auth.sign_out()
             st.session_state.user = None
+            st.session_state.auth_token = None
             st.session_state.user_display_name = ""
             st.session_state.local_bookmarks = set()
             st.session_state.local_saved_items = {}
@@ -988,6 +1021,10 @@ if not st.session_state.user and st.session_state.auth_page == "auth":
                         try:
                             res = supabase_client.auth.sign_in_with_password({"email": si_email, "password": si_pwd})
                             st.session_state.user = res.user
+                            if res.session:
+                                st.session_state.auth_token = res.session.access_token
+                                supabase_client.postgrest.auth(res.session.access_token)
+
                             load_user_profile(supabase_client, res.user.id, res.user.email or "")
                             sync_library_state(supabase_client, res.user.id)
                             st.session_state.auth_page = "landing"
@@ -1019,6 +1056,10 @@ if not st.session_state.user and st.session_state.auth_page == "auth":
                             res = supabase_client.auth.sign_up({"email": su_email, "password": su_pwd})
                             if res.user:
                                 clean_name = clean_text(su_fullname.strip()) or su_email.split("@")[0].capitalize()
+                                if res.session:
+                                    st.session_state.auth_token = res.session.access_token
+                                    supabase_client.postgrest.auth(res.session.access_token)
+
                                 supabase_client.table("profiles").upsert({
                                     "id": res.user.id,
                                     "email": su_email,
@@ -1043,12 +1084,11 @@ if not st.session_state.user and st.session_state.auth_page == "auth":
 # VIEW 1B: Warm Dark Academia Landing Page
 # =============================================================================
 elif not st.session_state.user and st.session_state.auth_page == "landing" and st.session_state.active_view != "reader":
-    # Top Bar: Monogram A. 🌿 on the Left
     nav_left, nav_right_1, nav_right_2 = st.columns([7, 1.5, 1.5], vertical_alignment="center")
     with nav_left:
         st.markdown(
-            '<div style="font-family: \'Playfair Display\', serif; font-size: 1.6rem; color: #D4AF37; font-style: italic; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; cursor: default;">'
-            'A. <span style="font-size: 1.05rem; font-style: normal; opacity: 0.9;">🌿</span>'
+            '<div style="font-family: \'Playfair Display\', serif; font-size: 1.6rem; color: #D4AF37; font-style: italic; font-weight: 700; cursor: default;">'
+            'A.'
             '</div>',
             unsafe_allow_html=True,
         )
@@ -1063,30 +1103,27 @@ elif not st.session_state.user and st.session_state.auth_page == "landing" and s
             st.session_state.auth_mode = "signup"
             st.rerun()
 
-    # Hero Center Title & Updated Subtitle
+    # Hero Center Title
     st.markdown(
         """
         <div class="landing-hero">
             <div class="hero-title-serif">ABSTRACTED</div>
-            <div class="hero-subtitle">Make research accessible</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # Human-Centered Mission Section (With Updated Enjoy! Copy)
+    # Subtle Prose Personal Memo ("Hi there!" Greeting & Quiet Aesthetic)
     st.markdown(
         """
-        <div class="mission-card">
-            <div class="mission-title">This is a tool built by a student for fellow curious students.</div>
-            <div class="mission-text">
-                PubMed contains a vast treasure trove of groundbreaking research in the life sciences, biomedical sciences, and more.
-                However to many high school and undergraduate students, this resource feels guarded by intimidating jargon and complex methodologies.
-                I believe that students should not have to choose between staying forever consigned to surface-level pop science reports or getting lost in the dense terminology of top-tier papers.
-                The aim of Abstracted is to be a bridge between the labs working at the cutting edge of their fields and the students just beginning to explore their paths.
-                Enjoy!
+        <div style="max-width: 680px; margin: 4.5rem auto 3rem auto; padding: 0 1rem; text-align: left;">
+            <div style="font-family: 'Lora', serif; font-style: italic; font-size: 1.35rem; color: #C5BBAA; margin-bottom: 0.85rem;">
+                Hi there!
+            </div>
+            <div style="font-family: 'Lora', serif; font-size: 0.9rem; line-height: 1.85; color: #C1B49A;">
+                This is a tool built by a student for fellow curious students. PubMed contains a vast treasure trove of groundbreaking research in the life sciences, biomedical sciences, and more. However to many high school and undergraduate students, this resource feels guarded by intimidating jargon and complex methodologies. I believe that students should not have to choose between staying forever consigned to surface-level pop science reports or getting lost in the dense terminology of top-tier papers. The aim of Abstracted is to be a bridge between the labs working at the cutting edge of their fields and the students just beginning to explore their paths. Enjoy!
                 <br/><br/>
-                <span style="font-family: 'Playfair Display', serif; font-weight: 600; color: #D4AF37; font-style: italic;">— Michelle</span>
+                <span style="font-family: 'Playfair Display', serif; font-style: italic; color: #D4AF37; font-size: 0.95rem;">— Michelle</span>
             </div>
         </div>
         """,
